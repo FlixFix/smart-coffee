@@ -1,0 +1,88 @@
+$dark-brown: #884A39;
+$light-brown: #C38154;
+$yellow: #FFC26F;
+$creme: #F9E0BB;
+$olive: rgba(19, 126, 72, 0.42);
+
+
+body {
+  color: $dark-brown;
+  position: fixed;
+}
+
+.content-container {
+  height: 100vh;
+  width: 100vw;
+  background-color: $creme;
+  color: $dark-brown;
+}
+
+.header-text {
+  font-weight: bold;
+  font-size: 1.5rem;
+}
+
+.machine-status-text {
+  color: #C38154;
+  font-weight: lighter;
+}
+
+.MuiPaper-root {
+  background-color: $dark-brown !important;
+}
+
+.MuiAlert- {
+  &message {
+    color: $creme;
+  }
+
+  &icon {
+    color: $creme !important;
+  }
+}
+
+svg {
+  stroke: $creme;
+}
+
+svg.icon-dark {
+  stroke: $dark-brown;
+}
+
+.font-creme {
+  color: $creme;
+}
+
+.divider-creme {
+  border-color: $creme !important;
+}
+
+.coffee-button {
+  width: 120px;
+}
+
+.live-dot {
+  background-color: red;
+  width: 10px;
+  height: 10px;
+  border-radius: 5px;
+  animation: blink-animation 1s steps(5, start) infinite;
+  -webkit-animation: blink-animation 1s steps(5, start) infinite;
+}
+
+@keyframes blink-animation {
+  to {
+    visibility: hidden;
+  }
+}
+@-webkit-keyframes blink-animation {
+  to {
+    visibility: hidden;
+  }
+}
+
+.log-panel {
+  font-size: 11px;
+  overflow-y: scroll;
+  height: 500px;
+}

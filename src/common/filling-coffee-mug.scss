@@ -1,0 +1,71 @@
+.cup {
+  position: relative;
+  width: 150px;
+  height: 150px;
+  border: 8px solid #ffefdb;
+  box-shadow: 0 0 0 12px #352a22;
+  border-radius: 10px 10px 60px 60px;
+  background: url('../assets/coffee.png');
+  background-repeat: repeat-x;
+  background-position: 0 70px;
+}
+
+@keyframes filling {
+
+  100% {
+    background-position: 600px -30px;
+  }
+}
+
+.cup .cup-handle {
+  position: absolute;
+  top: 10px;
+  right: -74px;
+  width: 60px;
+  height: 100px;
+  border: 12px solid #352a22;
+  border-radius: 20px 10px 50px 20px;
+}
+
+.cup .steam {
+  position: absolute;
+  border-radius: 10px 2px;
+  width: 8px;
+  animation: steaming 2s infinite;
+}
+
+@keyframes steaming {
+  0%, 100% {
+    opacity: 0;
+  }
+
+  50% {
+    opacity: 1;
+    filter: blur(.8px);
+    transform: translateY(-10px);
+  }
+}
+
+.cup .steam:nth-child(1) {
+  top: -70px;
+  left: 65px;
+  height: 30px;
+  background: #8e5a3423;
+  animation-delay: .2s;
+}
+
+.cup .steam:nth-child(2) {
+  top: -120px;
+  left: 95px;
+  height: 50px;
+  background: #8e5a3454;
+  animation-delay: .6s;
+}
+
+.cup .steam:nth-child(3) {
+  top: -90px;
+  left: 125px;
+  height: 40px;
+  background: #8e5a3433;
+  animation-delay: 1s;
+}
