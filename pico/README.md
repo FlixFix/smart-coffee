@@ -36,6 +36,7 @@ The main configuration variables for an initial setup are already set to proper 
 ### basic configuration
  * **print_to_console**: if true, the log output of the pico is also printed to the pico's console
  * **main_loop_delay**: the wait time between consequent main loop cycles. This has to account for the conversion time of the temperature within the temperature sensor based on the respective sensor resolution
+ * **pid_pom**: If this is set to true, the PID controller uses proportional on measurement, which tries to avoid overshoot. See https://simple-pid.readthedocs.io/en/latest/user_guide.html#proportional-on-measurement for more information.
  * **PICO_AP_SSID**: The SSID for the pico before it has been connected to any WIFI network
  * **PICO_AP_PW**: The password to access the access point provided by the pico
  * **mqtt_broker_ip**: The IP address of the mqtt broker, if you want to use this feature

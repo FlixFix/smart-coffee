@@ -17,6 +17,9 @@ The main features of this setup are:
 * various monitoring settings and functions for temperature and microcontroller events.
 * connection to an MQTT broker for logging the microcontroller events.
 
+# ☕️ Credits
+This whole project was inspired by the finally present availability of the pico again, which was sold out for a long time and by https://clevercoffee.de/, which provided a basic electric scheme of the Rancilio Silvia and their sensor, such as relais setup, which helped me a lot when setting up my hardware since I had no prior electrical knowledge. Further, I am using https://simple-pid.readthedocs.io/en/latest/index.html for the PID controller on the pico, which provides a perfect documentation for the library. Last, I want to thank my friend Kevin for enduring my endless messages about electronics and finding the time to help me tune the PID controller.
+
 # ☕️ Documentation
 The documentation within the code is not yet properly, since this project is only used for personal use. However, I tried to include very detailed READMEs in order to account for missing code comments. These files for the components can be found under:
 * For the pico: [README.md](pico%2FREADME.md)

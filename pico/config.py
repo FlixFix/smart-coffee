@@ -5,6 +5,7 @@ from PID import PID
 # debugging -----------------------------------------
 print_to_console = True
 main_loop_delay = 0.25
+pid_pom = True
 # ---------------------------------------------------
 
 # ssid and password for the access point ------------
@@ -44,6 +45,7 @@ kI = 0.45
 kD = 100
 brewTemp = 90
 pid_controller = PID(kP, kI, kD, setpoint=brewTemp, scale='ms')
+pid_controller.proportional_on_measurement = pid_pom
 # ---------------------------------------------------
 
 
