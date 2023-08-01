@@ -50,6 +50,27 @@ export function PicoConfigComponent(props: PicoConfigComponentProps): ReactEleme
                                                      setEditedConfig({...editedConfig, mqtt: e.target.checked})
                                                  }}/>}
                               label='MQTT'/>
+            {editedConfig.mqtt &&
+                <div className='pe-2 d-flex flex-column gap-3'>
+            <TextField label="MQTT IP"
+                       type='text'
+                       variant="outlined"
+                       size='small'
+                       value={editedConfig.mqtt_ip}
+                       onChange={(e) => {
+                           e.preventDefault();
+                           setEditedConfig({...editedConfig, mqtt_ip: e.target.value})
+                       }}/>
+            <TextField label="MQTT Topic"
+                       type='text'
+                       variant="outlined"
+                       size='small'
+                       value={editedConfig.mqtt_topic}
+                       onChange={(e) => {
+                           e.preventDefault();
+                           setEditedConfig({...editedConfig, mqtt_topic: e.target.value})
+                       }}/>
+                </div>}
             <FormControlLabel control={<Checkbox checked={editedConfig.info_logging}
                                                  onChange={(e) => {
                                                      setEditedConfig({...editedConfig, info_logging: e.target.checked})

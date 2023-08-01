@@ -103,6 +103,5 @@ async function getMachineStatus() {
 }
 
 exports.brewCoffee = brewCoffee;
-exports.onTime = deviceOnTime;
 exports.setOnTime = setOnTime;
 exports.getOnTime = getOnTime;

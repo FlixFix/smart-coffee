@@ -29,7 +29,7 @@ export function LogsPage(): ReactElement {
 
 
     useEffect(() => {
-        const socket = new WebSocket('ws://192.168.178.146:7071');
+        const socket = new WebSocket('ws://localhost:7071');
         socket.addEventListener('open', () => {
         });
 

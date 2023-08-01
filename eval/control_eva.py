@@ -5,81 +5,11 @@ import matplotlib.pyplot as plt
 
 groups = []
 
+
 def main():
     read_logs('../backend/log/pico.log', groups)
-    plot_results(groups)
-
-
-def main_live():
-    plt.ion()
-
-    fig = plt.figure()
-    ax = fig.add_subplot(111)
-    fig.show()
-    while True:
-        read_logs('../backend/log/pico.log', groups)
-        plot_group(ax, groups[-1])
-        plt.pause(2)
-        fig.canvas.draw()
-        fig.canvas.flush_events()
-
-
-# def animate(i):
-#     read_logs('../backend/log/pico.log', groups)
-#     ax.cla()
-#     print(len(groups[-1].lines))
-#     plot_group(groups[-1])
-
-
-def plot_group(ax, group):
-    # Compute time differences from the starting time
-    starting_time = group.lines[0].timestamp
-    time_diffs = [(line.timestamp - starting_time).total_seconds() for line in group.lines]
-
-    # Extract temperature values
-    temps = [line.temp for line in group.lines]
-
-    # Extract pid_output values
-    pid_outputs = [line.pid_output for line in group.lines]
-
-    # Create the legend text
-    legend_text = f"kp={group.kp}, ki={group.ki}, kd={group.kd}"
-    ax.plot([], [], ' ', label=legend_text)
-    ax.grid(True)
-    ax.axhline(y=float(group.temperature), color='m', linestyle='--', label='Desired Temperature')  # Add red line for desired temperature
-    ax.plot(time_diffs, temps, color='lightblue', label='Actual Temperature')
-    ax.set_xlabel("Time (s)")
-    ax.set_ylabel("Temperature")
-    ax.set_title(f"Control cycle started at {group.starting_time}")
-
-    # Plot the data for the current group with conditional coloring and markers
-    prev_pid_output = None  # Variable to track previous pid_output value
-    prev_time_diff = None  # Variable to track previous time difference
-    for j, pid_output in enumerate(pid_outputs):
-        # plot first heating state
-        if j == 0:
-            marker_label = 'heating on' if group.lines[j].pid_output > 0 else 'heating off'
-            color = 'green' if group.lines[j].pid_output > 0 else 'red'
-            ax.plot(time_diffs[j], temps[j], marker='.', color=color, markersize=8)
-            ax.annotate(marker_label, xy=(time_diffs[j], temps[j]), xytext=(5, -10),
-                        textcoords='offset points', fontsize=8, color=color)
-        # Check if there is a change from negative to positive or vice versa
-        if prev_pid_output is not None and ((prev_pid_output < 0 < pid_output) or (
-                prev_pid_output > 0 > pid_output)):
-            time_diff = time_diffs[j] - prev_time_diff
-            marker_label = 'heating on' if pid_output > 0 else f'heating off after \n {time_diff:.2f} seconds'
-            color = 'green' if pid_output > 0 else 'red'
-            ax.plot(time_diffs[j], temps[j], marker='.', color=color, markersize=8)
-            ax.annotate(marker_label, xy=(time_diffs[j], temps[j]), xytext=(5, -10),
-                        textcoords='offset points', fontsize=8, color=color)
-        prev_pid_output = pid_output
-        prev_time_diff = time_diffs[j]
-
-    # Add the legend to the subplot with padding
-    ax.legend(loc="upper right", borderaxespad=0.5)
-
-    # Add padding inside the subplot
-    ax.margins(x=0.05, y=0.8)
+    filtered_groups = [group for group in groups if group.lines]
+    plot_results(filtered_groups)
 
 
 def plot_results(groups):
@@ -92,6 +22,9 @@ def plot_results(groups):
 
     for i, group in enumerate(groups):
         # Compute time differences from the starting time
+        if len(group.lines) == 0:
+            break
+
         starting_time = group.lines[0].timestamp
         time_diffs = [(line.timestamp - starting_time).total_seconds() for line in group.lines]
 
@@ -249,8 +182,5 @@ class ControlCycle:
         self.finished = True
 
 
-
-
 if __name__ == "__main__":
     main()
-    # main_live()

@@ -4,10 +4,10 @@
 const express = require("express");
 const {writeConfig, readConfig, deleteConfig} = require("../util/config-util");
 const {
-    getPicoStatus, setPicoDevice, setDeviceStatus, picoBrewCoffee, getTemperature, turnMachineOn,
+    getPicoStatus, setDeviceStatus, picoBrewCoffee, getTemperature, turnMachineOn,
     getReferenceTemperature, updateConfig, getConfig
 } = require("../service/pico-service");
-const {brewCoffee, setOnTime, onTime, getOnTime} = require("../service/coffee-service");
+const {brewCoffee, setOnTime, getOnTime} = require("../service/coffee-service");
 const {resolve} = require("path");
 const {DateTime} = require("luxon");
 const {json} = require("express");
@@ -21,7 +21,7 @@ const PORT = process.env.PORT || 3001;
 
 // giving the cleaning time of the machine used to clean
 // the brewing group after brewing coffee
-const CLEAN_TIME = 2;
+const CLEAN_TIME = process.env.CLEAN_TIME ||  2;
 
 const app = express();
 app.use(express.json());
@@ -41,11 +41,6 @@ app.get("/coffee-hub/api/v1/on-status", (req, res) => {
 });
 
 app.get("/coffee-hub/api/v1/temperature", (req, res) => {
-    // new structure:
-    // get the temperature information from mqtt and not directly from pico -> reduce load on pico
-    // -> temperature information is logged in json format
-    // res.status(200);
-    // res.json(JSON.parse("{\"temp\": 90}"));
     getTemperature().then((temp) => {
         res.status(200);
         res.json(temp);
@@ -55,10 +50,6 @@ app.get("/coffee-hub/api/v1/temperature", (req, res) => {
 });
 
 app.get("/coffee-hub/api/v1/reference-temperature", (req, res) => {
-    // new structure:
-    // get the temperature information from mqtt and not directly from pico -> reduce load on pico
-    // -> temperature information is logged in json format
-
     getReferenceTemperature().then((temp) => {
         res.status(200);
         res.json(temp);
