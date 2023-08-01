@@ -6,7 +6,7 @@ import {
     IconAdjustmentsHorizontal,
     IconBrandTabler,
     IconCalendarTime,
-    IconCoffee,
+    IconCoffee, IconCpu,
     IconInfoCircle,
     IconPlant2
 } from "@tabler/icons-react";
@@ -42,7 +42,6 @@ function CoffeeHubComponent(props: CoffeeHubComponentProps) {
         const distance = touchStart - touchEnd
         const isLeftSwipe = distance > minSwipeDistance
         const isRightSwipe = distance < -minSwipeDistance
-        if (isLeftSwipe || isRightSwipe) console.log('swipe', isLeftSwipe ? 'left' : 'right')
         if (isRightSwipe) {
             setOpen(true);
         }
@@ -126,6 +125,19 @@ function CoffeeHubComponent(props: CoffeeHubComponentProps) {
                                 <IconBrandTabler/>
                             </ListItemIcon>
                             <ListItemText primary='Logs'/>
+                        </ListItemButton>
+                    </ListItem>
+                    <ListItem key='config' disablePadding className='font-creme'
+                              onClick={(e) => {
+                                  e.preventDefault();
+                                  props.onClickMenuItem('config');
+                                  setOpen(false);
+                              }}>
+                        <ListItemButton>
+                            <ListItemIcon>
+                                <IconCpu/>
+                            </ListItemIcon>
+                            <ListItemText primary='Pico Config'/>
                         </ListItemButton>
                     </ListItem>
                     <ListItem key='about' disablePadding className='font-creme'

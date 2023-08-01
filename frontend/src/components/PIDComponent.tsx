@@ -4,9 +4,11 @@ import {Alert, Button, Chip, TextField} from "@mui/material";
 import {Line} from "react-chartjs-2";
 import {ChartData} from "chart.js";
 import {CoffeeHubConfigDto} from "../model/coffee-hub-config-dto";
-import {IconTemperature} from "@tabler/icons-react";
+import {IconTemperature, IconWind, IconWindOff} from "@tabler/icons-react";
+import {DeviceStatusDto} from "../model/device-status-dto";
 
 export interface PIDComponentProps {
+    heatingStatus?: DeviceStatusDto;
     config: CoffeeHubConfigDto;
     onClickSave: (config: CoffeeHubConfigDto) => void;
     showAlert: boolean;
@@ -117,6 +119,9 @@ export function PIDComponent(props: PIDComponentProps): ReactElement {
                     <div className='d-flex gap-1 align-items-center'>
                         <IconTemperature />
                         {`${props.data.datasets[0].data[props.data.datasets[0].data.length - 1]} °C`}
+                        {props.heatingStatus !== undefined && props.heatingStatus.value === 1 ?
+                            <IconWind /> : <IconWindOff />
+                        }
                     </div>
                 }/>
             </div>

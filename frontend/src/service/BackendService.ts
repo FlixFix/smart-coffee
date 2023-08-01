@@ -5,6 +5,7 @@ import {BrewTypeEnum} from "../model/brew-type-enum";
 import {CoffeeHubConfigDto} from "../model/coffee-hub-config-dto";
 import {DateTime} from "luxon";
 import {TemperatureDto} from "../model/temperature-dto";
+import {PicoConfigDto} from "../model/pico-config-dto";
 const API_PATH = '/coffee-hub/api/v1';
 
 class BackendService {
@@ -58,6 +59,14 @@ class BackendService {
 
     static getCoffeeHubConfig(): Promise<CoffeeHubConfigDto> {
         return axios.get(`${API_PATH}/config`).then((res) => res.data).catch((e) => console.log(e));
+    }
+
+    static getPicoConfig(): Promise<PicoConfigDto> {
+        return axios.get(`${API_PATH}/pico-config`).then((res) => res.data).catch((e) => console.log(e));
+    }
+
+    static putPicoConfig(config: PicoConfigDto): Promise<PicoConfigDto> {
+        return axios.put(`${API_PATH}/pico-config`, config).then((res) => res.data).catch((e) => console.log(e));
     }
 
     static setCoffeeHubConfig(config: CoffeeHubConfigDto): Promise<CoffeeHubConfigDto> {

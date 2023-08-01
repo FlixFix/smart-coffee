@@ -6,6 +6,7 @@ import {useInterval} from "../hooks/use-interval-hook";
 import BackendService from "../service/BackendService";
 import {TemperatureDto} from "../model/temperature-dto";
 import {CoffeeHubConfigDto} from "../model/coffee-hub-config-dto";
+import {DeviceStatusDto} from "../model/device-status-dto";
 
 
 const labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
@@ -30,14 +31,17 @@ export function PIDPage(): ReactElement {
 
     const [tempArray, setTempArray] = useState<number[]>([]);
     const [labelArray, setLabelArray] = useState<number[]>([]);
+    const [heatingStatus, setHeatingStatus] = useState<DeviceStatusDto>();
 
     useEffect(() => {
+        getHeatingStatus();
+
         BackendService.getCoffeeHubConfig().then((config) => {
             setConfig(config);
         });
     }, [])
 
-    // useInterval(updateTemperatureArray, TEMP_INTERVAL);
+    useInterval(updateTemperatureArray, TEMP_INTERVAL);
 
     useEffect(() => {
         if (showAlert) {
@@ -50,6 +54,14 @@ export function PIDPage(): ReactElement {
             }
         }
     }, [showAlert]);
+
+
+    function getHeatingStatus(): void {
+        BackendService.getMachineStatus().then((picoStatus) => {
+            const heatingStatus = picoStatus?.devices?.find(s => s.device_number === '2');
+            setHeatingStatus(heatingStatus);
+        });
+    }
 
 
     function onClickSave(config: CoffeeHubConfigDto): void {
@@ -85,6 +97,7 @@ export function PIDPage(): ReactElement {
         <>
             {config &&
                 <PIDComponent onClickSave={onClickSave}
+                              heatingStatus={heatingStatus}
                               showAlert={showAlert}
                               config={config}
                               data={

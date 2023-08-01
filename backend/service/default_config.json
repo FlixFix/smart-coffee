@@ -1,0 +1,15 @@
+{
+  "scheduled": true,
+  "timesOn": [
+    "06:00",
+    "08:03"
+  ],
+  "idleTime": 2000,
+  "singleBrewTime": 5,
+  "doubleBrewTime": 34,
+  "brewTemp": 90,
+  "daysOn": [],
+  "pidKP": 80,
+  "pidKI": 0.45,
+  "pidKD": 100
+}

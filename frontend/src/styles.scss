@@ -49,6 +49,21 @@ svg.icon-dark {
   stroke: $dark-brown;
 }
 
+svg.icon-heat {
+  -webkit-animation: fadeinout 3s linear forwards;
+  animation: fadeinout 3s linear forwards;
+  animation-iteration-count: infinite;
+  opacity: 0;
+}
+
+@-webkit-keyframes fadeinout {
+  50% { opacity: 1; }
+}
+
+@keyframes fadeinout {
+  50% { opacity: 1; }
+}
+
 .font-creme {
   color: $creme;
 }

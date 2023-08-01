@@ -12,6 +12,7 @@ import {useInterval} from "../hooks/use-interval-hook";
 export function DashboardPage(): ReactElement {
 
     const [machineStatus, setMachineStatus] = useState<DeviceStatusDto>();
+    const [heatingStatus, setHeatingStatus] = useState<DeviceStatusDto>();
     const [brewingProcess, setBrewingProcess] = useState<number | undefined>(undefined);
     const [config, setConfig] = useState<CoffeeHubConfigDto>(emptyConfig);
     const [brewingTime, setBrewingTime] = useState(0);
@@ -31,14 +32,15 @@ export function DashboardPage(): ReactElement {
         getMachineOnTime();
     }, [machineStatus])
 
-    useInterval(getMachineStatus, 10000);
-    useInterval(getTemperature, 5000);
+    useInterval(getMachineStatus, 2000);
+    useInterval(getTemperature, 2000);
 
     function getMachineStatus(): void {
-        console.log('Checking for updated machine status...')
         BackendService.getMachineStatus().then((picoStatus) => {
             const derivedStatus = picoStatus?.devices?.find(s => s.device_number === '0');
+            const heatingStatus = picoStatus?.devices?.find(s => s.device_number === '2');
             setMachineStatus(derivedStatus);
+            setHeatingStatus(heatingStatus);
         });
     }
 
@@ -61,7 +63,6 @@ export function DashboardPage(): ReactElement {
                     onMinutes = parsedOnMinutes.toFixed(0).toString();
                 }
             }
-            console.log('updating on time...')
             setOnSince(onMinutes);
         });
     }
@@ -110,21 +111,20 @@ export function DashboardPage(): ReactElement {
     }
 
     function onClickCancel(): void {
-        console.log('Stopping!...')
         BackendService.toggleDevice({device_number: '1', value: 0}).then((newStatus) => {
             setBrewingProcess(undefined);
         });
     }
 
     async function onClickClean(): Promise<void> {
-        console.log('cleaning...');
         await BackendService.clean();
     }
 
     return (<DashboardComponent onClickDoubleShot={onClickDoubleShot}
                                 onClickSingleShot={onClickSingeShot}
                                 onClickToggle={onClickToggle}
-                                machineIsOn={machineStatus?.value === 1}
+                                heatingStatus={heatingStatus}
+                                machineStatus={machineStatus}
                                 brewingProcess={brewingProcess}
                                 brewingTime={brewingTime}
                                 onClickClean={onClickClean}

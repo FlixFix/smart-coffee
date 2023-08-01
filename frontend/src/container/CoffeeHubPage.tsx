@@ -8,9 +8,9 @@ import {CalendarPage} from "./CalendarPage";
 import {AboutComponent} from "../components/AboutComponent";
 import {PIDPage} from "./PIDPage";
 import {LogsPage} from "./LogsPage";
+import {PicoConfigComponent} from "../components/PicoConfigComponent";
+import {PicoConfigPage} from "./PicoConfigPage";
 
-export interface CoffeeHubPageProps {
-}
 
 export const emptyConfig: CoffeeHubConfigDto = {
     scheduled: false,
@@ -25,7 +25,7 @@ export const emptyConfig: CoffeeHubConfigDto = {
     brewTemp: 90
 }
 
-export function CoffeeHubPage(props: CoffeeHubPageProps): ReactElement {
+export function CoffeeHubPage(): ReactElement {
 
     const [content, setContent] = useState(<DashboardPage/>);
     const [config, setConfig] = useState<CoffeeHubConfigDto>(emptyConfig);
@@ -48,6 +48,8 @@ export function CoffeeHubPage(props: CoffeeHubPageProps): ReactElement {
             setContent(<PIDPage/>);
         } else if (currentView === 'logs') {
             setContent(<LogsPage/>);
+        } else if (currentView === 'config') {
+            setContent(<PicoConfigPage/>);
         } else {
             setContent(<AboutComponent/>)
         }
