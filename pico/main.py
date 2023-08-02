@@ -52,8 +52,10 @@ async def smart_coffee_loop():
                 logger.info('brewing...')
                 Pin(config.pin_pump, Pin.OUT, value=1)
 
+        temperature = 0
         if config.relais_io.value() == 1:
-            temperature = web_server.measure_temp(config.temp_sensor_resolution, config.pin_sensor_tank)
+            temperature = web_server.measure_temp(config.temp_sensor_resolution, config.pin_sensor_tank,
+                                                  last_temp=temperature)
             output = config.pid_controller(float(temperature))
             logger.pid_control(str(temperature), str(output))
             logger.info('The PID components are: ' + str(config.pid_controller.components))

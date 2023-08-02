@@ -6,10 +6,13 @@ from ds18x20 import DS18X20
 
 import utime
 import json
-from config import relais_io, relais_pump, relais_heat, rtc, pid_controller, CURRENT_CONFIG, pin_sensor_ref, pin_sensor_tank, \
+import config
+from config import relais_io, relais_pump, relais_heat, rtc, CURRENT_CONFIG, pin_sensor_ref, \
+    pin_sensor_tank, \
     print_to_console, temp_sensor_resolution
 import logger
 import config_helper
+from PID import PID
 
 # brewing coffee
 brew_duration: int = -1
@@ -62,7 +65,7 @@ async def serve_client(reader, writer):
         await handle_get_pico_status(reader, writer)
 
     elif request_method == 'GET' and PICO_ON_PATH in request_path:
-        await handle_get_pico_on(logger, reader, request_path, writer)
+        await handle_get_pico_on(reader, request_path, writer)
 
     elif request_method == 'GET' and PICO_BREW_PATH in request_path:
         await handle_get_pico_brew(reader, request_path, writer)
@@ -157,6 +160,7 @@ async def handle_put_pico_config(reader, writer):
     writer.write(httpUtils.write_response(CURRENT_CONFIG))
     2
 
+
 async def handle_get_pico_config(reader, writer):
     await read_complete_request(reader)
 
@@ -171,14 +175,18 @@ async def handle_get_pico_brew(reader, request_path, writer):
     writer.write('HTTP/1.0 200 OK\r\nContent-Length: 0\r\n\r\n')
 
 
-async def handle_get_pico_on(logger, reader, request_path, writer):
+async def handle_get_pico_on(reader, request_path, writer):
+
     await read_complete_request(reader)
     params = httpUtils.extract_search_parameters(request_path)
     # set parameters to the PIDController object
-    pid_controller.tunings = (float(params.get('kP')), float(params.get('kI')), float(params.get('kD')))
-    pid_controller.setpoint = float(params.get('brewTemp'))
-    pid_controller.error_map = None
-    pid_controller.output_limits = (None, 50000)
+    tunings = (float(params.get('kP')), float(params.get('kI')), float(params.get('kD')))
+    brew_temp = float(params.get('brewTemp'))
+    config.pid_controller = PID(tunings[0], tunings[1], tunings[2], setpoint=brew_temp, scale='ms')
+    # pid_controller.tunings = (float(params.get('kP')), float(params.get('kI')), float(params.get('kD')))
+    # pid_controller.setpoint = float(params.get('brewTemp'))
+    # pid_controller.error_map = None
+    # pid_controller.output_limits = (None, 50000)
     log_message = "Started PID with values: kp=" + str(params.get('kP')) + " ki=" + str(
         params.get('kI')) + " kd=" + str(params.get('kD'))
     logger.pid(log_message)
@@ -246,45 +254,31 @@ def read_raw_temp(sensor_pin):
     ow.reset()
     ow.select_rom(rom)
     ow.writebyte(0x44)  # Convert Temp
-    # while True:
-    #    if ow.readbit():
-    #        break
-    # ow.reset()
-    # ow.select_rom(rom)
-    # ow.writebyte(0xbe)  # Read scratch
-
-    # data = []
-    # data = [0 for i in range(8)]
-    # for i in range(8):
-    #    data[i] = ow.readbyte()
-    # return data
 
 
-def measure_temp(resolution, sensor_pin):
-    read_raw_temp(sensor_pin)
+def measure_temp(resolution, sensor_pin, last_temp=0):
+    # in case the sensor is still busy converting temperature
+    # we simply return the last measured temperature as a workaround
+    try:
+        read_raw_temp(sensor_pin)
+        dat = Pin(sensor_pin)
+        ds = DS18X20(onewire.OneWire(dat))
+        roms = ds.scan()
+        boiler_rom = roms[0]
 
-    dat = Pin(sensor_pin)
-    ds = DS18X20(onewire.OneWire(dat))
-    roms = ds.scan()
-    for rom in roms:
+        config = b'\x00\x00\x7f'
         if resolution == 9:
             config = b'\x00\x00\x1f'
         if resolution == 10:
             config = b'\x00\x00\x3f'
         if resolution == 11:
             config = b'\x00\x00\x5f'
-        if resolution == 12:
-            config = b'\x00\x00\x7f'
-        ds.write_scratch(rom, config)
-        # ds.convert_temp()
-        # data = ds.read_scratch(rom)
-        # print('data: ', data)
+        ds.write_scratch(boiler_rom, config)
 
-    # temp = convert_temp(rom, data)
-    # print('temp: ', str(temp))
+        return ds.read_temp(roms[0])
 
-    # time.sleep_ms(int(750 / (2 ** (12 - resolution))))
-    t = 0
-    for rom in roms:
-        t = ds.read_temp(rom)
-    return t
+    except IndexError:
+        print('Sensor still busy converting temperature. Skipping measure cycle.')
+        return last_temp
+
+

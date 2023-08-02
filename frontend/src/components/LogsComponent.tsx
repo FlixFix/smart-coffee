@@ -9,7 +9,7 @@ export interface LogsComponentProps {
 export function LogsComponent(props: LogsComponentProps): ReactElement {
 
 function getFormattedLogMessage(logEntry: LogEntry): ReactElement {
-    return <div className='w-100 justify-content-start d-flex align-items-center'>
+    return <div className='w-100 justify-content-start d-flex align-items-center' key={logEntry.timeStamp}>
         <span style={{minWidth: '160px'}}><b>{`${logEntry.type} [${logEntry.timeStamp}]    `}</b>
         </span>
             <span>

@@ -5,7 +5,7 @@ from PID import PID
 # debugging -----------------------------------------
 print_to_console = True
 main_loop_delay = 0.25
-pid_pom = True
+pid_pom = False
 # ---------------------------------------------------
 
 # ssid and password for the access point ------------

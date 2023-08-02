@@ -12,7 +12,6 @@ export function PicoConfigPage(): ReactElement {
 
     useEffect(() => {
         BackendService.getPicoConfig().then((response) => {
-            console.log(response);
             setConfig(response);
         })
     }, [])

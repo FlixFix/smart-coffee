@@ -41,14 +41,13 @@ def get_date_time():
     return timestring
 
 
-async def send_log_to_backend(message):
+def send_log_to_backend(message):
     if CURRENT_CONFIG.mqtt is True:
         try:
             client = mqtt_connect()
-            client.publish(mqtt_topic, message)
+            client.publish(mqtt_broker_topic, message)
             client.disconnect()
         except OSError:
-            print()
             print('Fehler: Keine MQTT-Verbindung')
 
 
