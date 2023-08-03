@@ -58,3 +58,13 @@ The main configuration variables for an initial setup are already set to proper 
 * **pin_sensor_tank**: The pin number of the pin used for the tank temperature sensor
 * **pin_sensor_ref**: The pin number of the pin used for the reference temperature sensor
 
+
+## Logging
+The logging can take place at two different stages depending on your needs
+* print to the pico console if configured
+* send log messages via MQTT if configured
+
+Any combination of the both is possible.
+
+Further errors are logged to a day specific error.log file in order to help with debugging.
+
