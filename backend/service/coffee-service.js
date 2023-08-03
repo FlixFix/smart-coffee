@@ -67,7 +67,7 @@ async function scheduleMachine() {
 
 function currentTimeInConfiguredTimes(config) {
     const currentTime = DateTime.local().toFormat("HH:mm");
-    const currentDay = DateTime.local().day % 6 - 1;
+    const currentDay = DateTime.local().day % 6;
 
     // check day
     if (!config.daysOn.includes(currentDay)) {

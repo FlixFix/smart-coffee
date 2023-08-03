@@ -29,4 +29,4 @@ The backend configuration is done through the [.env](.env). Following values can
 * **CLEAN_TIME**: The time used for the cleaning of the brew group.
 
 ## Logging
-In case the MQTT broker is setup and the feature is activated on the PICO, every message received from the broker is logged by the backend in the [pico.log](log%2Fpico.log). The messages follow a custom log format, which is also included in this repository ([pico_custom_log_format.xml](..%2Fpico_custom_log_format.xml)) and can be imported into IntellJ in order to get colour coded and more manageable logs.
+In case the MQTT broker is setup and the feature is activated on the PICO, every message received from the broker is logged by the backend in the [pico.log](log%2Fpico.log) (A different log file will be created for each day). The messages follow a custom log format, which is also included in this repository ([pico_custom_log_format.xml](..%2Fpico_custom_log_format.xml)) and can be imported into IntellJ in order to get colour coded and more manageable logs.
