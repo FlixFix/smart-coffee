@@ -22,6 +22,14 @@ export function PicoConfigComponent(props: PicoConfigComponentProps): ReactEleme
             return true;
         }
 
+        if (props.picoConfig.mqtt_topic !== editedConfig.mqtt_topic) {
+            return true;
+        }
+
+        if (props.picoConfig.mqtt_ip !== editedConfig.mqtt_ip) {
+            return true;
+        }
+
         if (props.picoConfig.request_logging !== editedConfig.request_logging) {
             return true;
         }
