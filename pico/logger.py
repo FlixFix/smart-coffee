@@ -1,9 +1,21 @@
 from umqtt.simple import MQTTClient
+import os
 from config import mqtt_broker_ip, mqtt_broker_topic, CURRENT_CONFIG, rtc, print_to_console
 
 # ---------------------------------------------------
 # logging
 # ---------------------------------------------------
+
+# this ensures, that errors are logged to a logfile
+# in case the pico crashes ->
+# duplicate stdout and stderr to the log file
+year = rtc.datetime()[0]
+month = rtc.datetime()[1]
+day = rtc.datetime()[2]
+logFile = str(year) + '-' + str(month) + '-' + str(day) + '_error.log'
+logfile = open(logFile, 'w')
+os.dupterm(logfile)
+
 
 def info(message):
     if CURRENT_CONFIG.info_logging is True:
