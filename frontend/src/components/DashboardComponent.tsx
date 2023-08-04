@@ -6,13 +6,14 @@ import {
     IconBlurOff,
     IconCircleCheck,
     IconCoffee,
-    IconDroplet,
+    IconDroplet, IconHandClick, IconHandFinger, IconHandFingerOff, IconHandStop, IconHomeHand,
     IconTemperature,
     IconWind, IconWindOff
 } from "@tabler/icons-react";
 import {FillingCoffeeMugComponent} from "../common/FillingCoffeeMugComponent";
 import {DeviceStatusDto} from "../model/device-status-dto";
 import CircularProgress from "@mui/material/CircularProgress";
+import {BrewingButtonComponent} from "../common/BrewingButtonComponent";
 
 export interface DashboardComponentProps {
     machineStatus?: DeviceStatusDto;
@@ -22,10 +23,11 @@ export interface DashboardComponentProps {
     onClickDoubleShot: () => void;
     brewingProcess?: number;
     brewingTime: number;
-    onClickStop: () => void;
     onClickClean: () => void;
     machineOnTime?: string;
     temperature?: number;
+    manuallyBrewing?: boolean;
+    toggleBrewing: (brewing: boolean) => void;
 }
 
 export function DashboardComponent(props: DashboardComponentProps): ReactElement {
@@ -73,7 +75,7 @@ export function DashboardComponent(props: DashboardComponentProps): ReactElement
         <LogoHeader height='35px' text='Dashboard'/>
         <div className='ps-2 d-flex flex-column align-items-center gap-3'>
             {props.machineStatus === undefined ? <>
-                    <CircularProgress />
+                    <CircularProgress/>
                 </> :
                 <>
                     <div className='d-flex flex-column gap-1 align-items-center'>
@@ -102,43 +104,52 @@ export function DashboardComponent(props: DashboardComponentProps): ReactElement
                             </div>}
 
                     </div>
-                    <Button variant='contained'
-                            disabled={props.machineStatus.value !== 1}
-                            onClick={(e) => {
-                                e.preventDefault();
-                                props.onClickSingleShot();
-                                startTimer();
-                            }}>
-                        <div className='d-flex align-items-center gap-2' style={{width: '180px'}}>
-                            <span>Single Shot</span>
+
+
+                    <BrewingButtonComponent
+                        onActivate={() => {
+                            props.onClickSingleShot();
+                            startTimer();
+                        }}
+                        onDeactivate={() => props.toggleBrewing(true)}
+                        labelInactive='Single Shot'
+                        labelActive='Stop'
+                        iconActive={<><IconCoffee className='ms-auto icon-heat'/>
+                            <IconHandStop/></>}
+                        iconInactive={
                             <IconCoffee className='ms-auto'/>
-                        </div>
-                    </Button>
-                    <Button variant='contained'
-                            disabled={props.machineStatus.value !== 1}
-                            onClick={(e) => {
-                                e.preventDefault();
-                                props.onClickDoubleShot();
-                                startTimer();
-                            }}>
-                        <div className='d-flex align-items-center gap-2 justify-content-start' style={{width: '180px'}}>
-                            <span>Double Shot</span>
+                        }
+                        brewing={props.brewingProcess !== undefined}
+                        disabled={props.machineStatus.value !== 1}/>
+
+                    <BrewingButtonComponent
+                        onActivate={() => {
+                            props.onClickDoubleShot();
+                            startTimer();
+                        }}
+                        onDeactivate={() => props.toggleBrewing(true)}
+                        labelInactive='Double Shot'
+                        labelActive='Stop'
+                        iconActive={<><IconCoffee className='ms-auto icon-heat'/>
+                            <IconHandStop/></>}
+                        iconInactive={<>
                             <IconCoffee className='ms-auto'/>
-                            <IconCoffee/>
-                        </div>
-                    </Button>
-                    <Button variant='contained'
-                            className='mb-5'
-                            disabled={props.machineStatus.value !== 1}
-                            onClick={(e) => {
-                                e.preventDefault();
-                                props.onClickClean();
-                            }}>
-                        <div className='d-flex align-items-center gap-2 justify-content-start' style={{width: '180px'}}>
-                            <span>Nachspülen</span>
-                            <IconDroplet className='ms-auto'/>
-                        </div>
-                    </Button>
+                            <IconCoffee/></>}
+                        brewing={props.brewingProcess !== undefined}
+                        disabled={props.machineStatus.value !== 1}/>
+
+                    <BrewingButtonComponent className='mb-5'
+                                            onActivate={() => props.toggleBrewing(true)}
+                                            onDeactivate={() => props.toggleBrewing(false)}
+                                            labelInactive='Manuell'
+                                            labelActive='Stop'
+                                            iconActive={<><IconCoffee className='ms-auto icon-heat'/>
+                                                <IconHandStop/></>}
+                                            iconInactive={<IconHandFinger className='ms-auto'/>}
+                                            brewing={props.manuallyBrewing}
+                                            disabled={props.machineStatus.value !== 1}
+                    />
+
                     {
                         (props.brewingProcess !== undefined && props.brewingProcess < props.brewingTime && !showAlert) &&
                         <div className='mt-4 mb-2 d-flex justify-content-center'>
@@ -148,17 +159,6 @@ export function DashboardComponent(props: DashboardComponentProps): ReactElement
                                 <FillingCoffeeMugComponent maxValue={props.brewingTime + 1}/>
                             </div>
                         </div>
-                    }
-                    {
-                        showAlert &&
-                        <>
-                            <div className='mb-2 d-flex flex-column align-items-center gap-3'>
-                                <div className='mt-5 d-flex justify-content-center'>
-                                    <IconCircleCheck className='icon-dark' size={200}/>
-                                </div>
-                                <span>Fertig!</span>
-                            </div>
-                        </>
                     }
                     {
                         showAlert &&

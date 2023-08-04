@@ -1,1 +1,1 @@
-{"scheduled":true,"timesOn":["06:00","09:27"],"idleTime":200,"singleBrewTime":5,"doubleBrewTime":28,"brewTemp":90,"daysOn":[3],"pidKP":48,"pidKI":0.192,"pidKD":2880}
+{"scheduled":true,"timesOn":["06:00","09:27"],"idleTime":200,"singleBrewTime":5,"doubleBrewTime":28,"brewTemp":85,"daysOn":[3],"pidKP":48,"pidKI":0.192,"pidKD":2880}

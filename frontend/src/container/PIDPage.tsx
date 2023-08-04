@@ -1,6 +1,5 @@
 import React, {ReactElement, useEffect, useState} from 'react';
 import {PIDComponent} from "../components/PIDComponent";
-import {faker} from "@faker-js/faker";
 import {ChartData} from "chart.js";
 import {useInterval} from "../hooks/use-interval-hook";
 import BackendService from "../service/BackendService";
@@ -9,19 +8,6 @@ import {CoffeeHubConfigDto} from "../model/coffee-hub-config-dto";
 import {DeviceStatusDto} from "../model/device-status-dto";
 
 
-const labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
-
-export const data: ChartData<'line', number[], string> = {
-    labels,
-    datasets: [
-        {
-            label: 'Temperaturverlauf',
-            data: labels.map(() => faker.datatype.number({min: 15, max: 140})),
-            borderColor: 'rgba(19, 126, 72, 0.42)',
-            backgroundColor: 'rgba(19, 126, 72, 0.42)',
-        }
-    ],
-};
 
 const TEMP_INTERVAL = 1000;
 

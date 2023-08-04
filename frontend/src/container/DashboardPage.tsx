@@ -18,6 +18,7 @@ export function DashboardPage(): ReactElement {
     const [brewingTime, setBrewingTime] = useState(0);
     const [onSince, setOnSince] = useState<string>();
     const [temp, setTemp] = useState<number | undefined>(undefined);
+    const [manuallyBrewing, setManuallyBrewing] = useState<boolean | undefined>(undefined);
 
     useEffect(() => {
         getMachineStatus();
@@ -80,7 +81,10 @@ export function DashboardPage(): ReactElement {
             counter += 1;
             setBrewingProcess(counter);
 
-            if (counter >= config.singleBrewTime) clearInterval(intervalId)
+            if (counter >= config.singleBrewTime) {
+                clearInterval(intervalId)
+                setBrewingProcess(undefined)
+            }
         }, 1000)
 
     }
@@ -98,7 +102,10 @@ export function DashboardPage(): ReactElement {
             counter += 1;
             setBrewingProcess(counter);
 
-            if (counter >= config.doubleBrewTime) clearInterval(intervalId)
+            if (counter >= config.doubleBrewTime) {
+                clearInterval(intervalId)
+                setBrewingProcess(undefined)
+            }
         }, 1000)
     }
 
@@ -110,9 +117,14 @@ export function DashboardPage(): ReactElement {
 
     }
 
-    function onClickCancel(): void {
-        BackendService.toggleDevice({device_number: '1', value: 0}).then((newStatus) => {
-            setBrewingProcess(undefined);
+    function toggleBrewing(brewing: boolean): void {
+        const status = brewing ? 1 : 0;
+        BackendService.toggleDevice({device_number: '1', value: status}).then((newStatus) => {
+            if (newStatus.value === 1) {
+                setManuallyBrewing(true);
+            } else {
+                setManuallyBrewing(undefined);
+            }
         });
     }
 
@@ -129,6 +141,7 @@ export function DashboardPage(): ReactElement {
                                 brewingTime={brewingTime}
                                 onClickClean={onClickClean}
                                 machineOnTime={onSince}
-                                onClickStop={onClickCancel}
-                                temperature={temp}/>)
+                                temperature={temp}
+                                manuallyBrewing={manuallyBrewing}
+                                toggleBrewing={toggleBrewing}/>)
 }
