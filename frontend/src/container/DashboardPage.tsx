@@ -3,22 +3,23 @@ import {DashboardComponent} from "../components/DashboardComponent";
 import {DeviceStatusDto} from "../model/device-status-dto";
 import BackendService from "../service/BackendService";
 import {BrewTypeEnum} from "../model/brew-type-enum";
-import {CoffeeHubConfigDto} from "../model/coffee-hub-config-dto";
 import {emptyConfig} from "./CoffeeHubPage";
 import {DateTime} from "luxon";
 import {useInterval} from "../hooks/use-interval-hook";
+import {PicoConfigDto} from "../model/pico-config-dto";
 
-
+/**
+ * "Dashboard" page container.
+ */
 export function DashboardPage(): ReactElement {
 
     const [machineStatus, setMachineStatus] = useState<DeviceStatusDto>();
     const [heatingStatus, setHeatingStatus] = useState<DeviceStatusDto>();
-    const [brewingProcess, setBrewingProcess] = useState<number | undefined>(undefined);
-    const [config, setConfig] = useState<CoffeeHubConfigDto>(emptyConfig);
-    const [brewingTime, setBrewingTime] = useState(0);
+    const [tankStatus, setTankStatus] = useState<DeviceStatusDto>();
+    const [config, setConfig] = useState<PicoConfigDto>(emptyConfig);
+    const [brewingTime, setBrewingTime] = useState<number | undefined>(undefined);
     const [onSince, setOnSince] = useState<string>();
     const [temp, setTemp] = useState<number | undefined>(undefined);
-    const [manuallyBrewing, setManuallyBrewing] = useState<boolean | undefined>(undefined);
 
     useEffect(() => {
         getMachineStatus();
@@ -36,12 +37,15 @@ export function DashboardPage(): ReactElement {
     useInterval(getMachineStatus, 2000);
     useInterval(getTemperature, 2000);
 
+
     function getMachineStatus(): void {
         BackendService.getMachineStatus().then((picoStatus) => {
             const derivedStatus = picoStatus?.devices?.find(s => s.device_number === '0');
             const heatingStatus = picoStatus?.devices?.find(s => s.device_number === '2');
+            const tankStatus = picoStatus?.devices?.find(s => s.device_number === '3');
             setMachineStatus(derivedStatus);
             setHeatingStatus(heatingStatus);
+            setTankStatus(tankStatus);
         });
     }
 
@@ -69,44 +73,16 @@ export function DashboardPage(): ReactElement {
     }
 
     function onClickSingeShot(): void {
-        setBrewingTime(config.singleBrewTime);
+
         BackendService.brewCoffee(BrewTypeEnum.SINGLE).then(() => {
-            setBrewingProcess(undefined);
+            setBrewingTime(config.singleBrewTime);
         });
-
-        // start time, when brewing starts
-        // when brewing finishes timer should be done
-        let counter = 0;
-        let intervalId = setInterval(() => {
-            counter += 1;
-            setBrewingProcess(counter);
-
-            if (counter >= config.singleBrewTime) {
-                clearInterval(intervalId)
-                setBrewingProcess(undefined)
-            }
-        }, 1000)
-
     }
 
     function onClickDoubleShot(): void {
-        setBrewingTime(config.doubleBrewTime);
         BackendService.brewCoffee(BrewTypeEnum.DOUBLE).then(() => {
-            setBrewingProcess(undefined);
+            setBrewingTime(config.doubleBrewTime);
         });
-
-        // start time, when brewing starts
-        // when brewing finishes timer should be done
-        let counter = 0;
-        let intervalId = setInterval(() => {
-            counter += 1;
-            setBrewingProcess(counter);
-
-            if (counter >= config.doubleBrewTime) {
-                clearInterval(intervalId)
-                setBrewingProcess(undefined)
-            }
-        }, 1000)
     }
 
     function onClickToggle(): void {
@@ -121,27 +97,31 @@ export function DashboardPage(): ReactElement {
         const status = brewing ? 1 : 0;
         BackendService.toggleDevice({device_number: '1', value: status}).then((newStatus) => {
             if (newStatus.value === 1) {
-                setManuallyBrewing(true);
+                setBrewingTime(Infinity);
             } else {
-                setManuallyBrewing(undefined);
+                setBrewingTime(undefined);
             }
         });
     }
 
-    async function onClickClean(): Promise<void> {
-        await BackendService.clean();
+    function cancelBrewing(): void {
+        BackendService.cancelBrewing().then(() => {
+            setBrewingTime(undefined);
+        })
     }
+
 
     return (<DashboardComponent onClickDoubleShot={onClickDoubleShot}
                                 onClickSingleShot={onClickSingeShot}
                                 onClickToggle={onClickToggle}
                                 heatingStatus={heatingStatus}
                                 machineStatus={machineStatus}
-                                brewingProcess={brewingProcess}
                                 brewingTime={brewingTime}
-                                onClickClean={onClickClean}
                                 machineOnTime={onSince}
                                 temperature={temp}
-                                manuallyBrewing={manuallyBrewing}
-                                toggleBrewing={toggleBrewing}/>)
+                                toggleBrewing={toggleBrewing}
+                                onCancelBrewing={cancelBrewing}
+                                setBrewingTime={setBrewingTime}
+                                desiredTemperature={config.brewTemp}
+                                tankStatus={tankStatus}/>)
 }

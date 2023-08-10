@@ -2,17 +2,30 @@ import React, {ReactElement, useState} from 'react';
 import {LogoHeader} from "./LogoHeader";
 import {Alert, Button, Checkbox, FormControlLabel, TextField} from "@mui/material";
 import {IconCalendarTime, IconCirclePlus, IconClockHour3, IconTrash} from "@tabler/icons-react";
-import {CoffeeHubConfigDto} from "../model/coffee-hub-config-dto";
+import {PicoConfigDto} from "../model/pico-config-dto";
 
 
 export interface CalendarComponentProps {
-    config: CoffeeHubConfigDto;
-    onClickSave: (config: CoffeeHubConfigDto) => void;
+    /**
+     * The current pico config.
+     */
+    config: PicoConfigDto;
+    /**
+     * onClick event handler for clicking the save button.
+     * @param config the updated config dto.
+     */
+    onClickSave: (config: PicoConfigDto) => void;
+    /**
+     * If true, the successfully saved alert will be shown.
+     */
     showAlert: boolean;
 }
 
 const DAYS = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
 
+/**
+ * The component for the "Zeitsteuerung" page
+ */
 export function CalendarComponent(props: CalendarComponentProps): ReactElement {
 
     const [days, setDays] = useState<number[]>(props.config.daysOn);

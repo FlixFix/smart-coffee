@@ -82,14 +82,11 @@ function currentTimeInConfiguredTimes(config) {
 }
 
 async function brewCoffee(coffeeType) {
-    let brewTime = readConfig().doubleBrewTime;
-    if (coffeeType === 'single') {
-        brewTime = readConfig().singleBrewTime;
-    }
+    await picoBrewCoffee(coffeeType);
+}
 
-    console.log(`Brewing coffee of type ${coffeeType} with a duration of ${brewTime} seconds!`)
-
-    await picoBrewCoffee(brewTime);
+async function cancelBrewing() {
+    await doDeleteBrew();
 }
 
 async function getMachineStatus() {

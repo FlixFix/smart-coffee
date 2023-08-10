@@ -3,15 +3,31 @@ import {LogoHeader} from "./LogoHeader";
 import {Alert, Button, Chip, TextField} from "@mui/material";
 import {Line} from "react-chartjs-2";
 import {ChartData} from "chart.js";
-import {CoffeeHubConfigDto} from "../model/coffee-hub-config-dto";
 import {IconTemperature, IconWind, IconWindOff} from "@tabler/icons-react";
 import {DeviceStatusDto} from "../model/device-status-dto";
+import {PicoConfigDto} from "../model/pico-config-dto";
 
 export interface PIDComponentProps {
+    /**
+     * The status of the heating, whether it is turned on or off.
+     */
     heatingStatus?: DeviceStatusDto;
-    config: CoffeeHubConfigDto;
-    onClickSave: (config: CoffeeHubConfigDto) => void;
+    /**
+     * The current pico config.
+     */
+    config: PicoConfigDto;
+    /**
+     * onClick event handler for clicking the save button.
+     * @param config the updated config dto.
+     */
+    onClickSave: (config: PicoConfigDto) => void;
+    /**
+     * If true, the successfully saved alert will be shown.
+     */
     showAlert: boolean;
+    /**
+     * The data array containing the data points for the temperature diagram.
+     */
     data: ChartData<'line', number[], number>;
 }
 
@@ -30,6 +46,9 @@ export const chartOption = {
     },
 };
 
+/**
+ * The component for the "PID" page.
+ */
 export function PIDComponent(props: PIDComponentProps): ReactElement {
     const [kp, setKp] = useState<string | undefined>(props.config.pidKP?.toString());
     const [ki, setKi] = useState<string | undefined>(props.config.pidKI?.toString());

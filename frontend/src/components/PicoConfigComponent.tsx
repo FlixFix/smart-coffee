@@ -4,17 +4,30 @@ import {PicoConfigDto} from "../model/pico-config-dto";
 import {Alert, Button, Checkbox, FormControlLabel, TextField} from "@mui/material";
 
 export interface PicoConfigComponentProps {
+    /**
+     * The current pico config.
+     */
     picoConfig: PicoConfigDto;
+    /**
+     * onClick event handler for clicking the save button.
+     * @param config the updated config dto.
+     */
     onSaveConfig: (config: PicoConfigDto) => void;
+    /**
+     * If true, the successfully saved alert will be shown.
+     */
     showAlert: boolean;
 }
 
+/**
+ * The component for the "Pico Config" page.
+ */
 export function PicoConfigComponent(props: PicoConfigComponentProps): ReactElement {
 
     const [editedConfig, setEditedConfig] = useState(props.picoConfig);
 
     function hasChanges(): boolean {
-        if (props.picoConfig.info_logging !== editedConfig.info_logging) {
+        if (props.picoConfig.infoLogging !== editedConfig.infoLogging) {
             return true;
         }
 
@@ -22,23 +35,23 @@ export function PicoConfigComponent(props: PicoConfigComponentProps): ReactEleme
             return true;
         }
 
-        if (props.picoConfig.mqtt_topic !== editedConfig.mqtt_topic) {
+        if (props.picoConfig.mqttTopic !== editedConfig.mqttTopic) {
             return true;
         }
 
-        if (props.picoConfig.mqtt_ip !== editedConfig.mqtt_ip) {
+        if (props.picoConfig.mqttIp !== editedConfig.mqttIp) {
             return true;
         }
 
-        if (props.picoConfig.request_logging !== editedConfig.request_logging) {
+        if (props.picoConfig.requestLogging !== editedConfig.requestLogging) {
             return true;
         }
 
-        if (props.picoConfig.pid_logging !== editedConfig.pid_logging) {
+        if (props.picoConfig.pidLogging !== editedConfig.pidLogging) {
             return true;
         }
 
-        if (props.picoConfig.pid_control_logging !== editedConfig.pid_control_logging) {
+        if (props.picoConfig.pidControlLogging !== editedConfig.pidControlLogging) {
             return true;
         }
 
@@ -64,44 +77,44 @@ export function PicoConfigComponent(props: PicoConfigComponentProps): ReactEleme
                        type='text'
                        variant="outlined"
                        size='small'
-                       value={editedConfig.mqtt_ip}
+                       value={editedConfig.mqttIp}
                        onChange={(e) => {
                            e.preventDefault();
-                           setEditedConfig({...editedConfig, mqtt_ip: e.target.value})
+                           setEditedConfig({...editedConfig, mqttIp: e.target.value})
                        }}/>
             <TextField label="MQTT Topic"
                        type='text'
                        variant="outlined"
                        size='small'
-                       value={editedConfig.mqtt_topic}
+                       value={editedConfig.mqttTopic}
                        onChange={(e) => {
                            e.preventDefault();
-                           setEditedConfig({...editedConfig, mqtt_topic: e.target.value})
+                           setEditedConfig({...editedConfig, mqttTopic: e.target.value})
                        }}/>
                 </div>}
-            <FormControlLabel control={<Checkbox checked={editedConfig.info_logging}
+            <FormControlLabel control={<Checkbox checked={editedConfig.infoLogging}
                                                  onChange={(e) => {
-                                                     setEditedConfig({...editedConfig, info_logging: e.target.checked})
+                                                     setEditedConfig({...editedConfig, infoLogging: e.target.checked})
                                                  }}/>}
                               label='Log info'/>
-            <FormControlLabel control={<Checkbox checked={editedConfig.request_logging}
+            <FormControlLabel control={<Checkbox checked={editedConfig.requestLogging}
                                                  onChange={(e) => {
                                                      setEditedConfig({
                                                          ...editedConfig,
-                                                         request_logging: e.target.checked
+                                                         requestLogging: e.target.checked
                                                      })
                                                  }}/>}
                               label='Log requests'/>
-            <FormControlLabel control={<Checkbox checked={editedConfig.pid_logging}
+            <FormControlLabel control={<Checkbox checked={editedConfig.pidLogging}
                                                  onChange={(e) => {
-                                                     setEditedConfig({...editedConfig, pid_logging: e.target.checked})
+                                                     setEditedConfig({...editedConfig, pidLogging: e.target.checked})
                                                  }}/>}
                               label='Log PID'/>
-            <FormControlLabel control={<Checkbox checked={editedConfig.pid_control_logging}
+            <FormControlLabel control={<Checkbox checked={editedConfig.pidControlLogging}
                                                  onChange={(e) => {
                                                      setEditedConfig({
                                                          ...editedConfig,
-                                                         pid_control_logging: e.target.checked
+                                                         pidControlLogging: e.target.checked
                                                      })
                                                  }}/>}
                               label='Log PID control'/>

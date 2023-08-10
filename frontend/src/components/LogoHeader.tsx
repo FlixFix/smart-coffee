@@ -3,10 +3,21 @@ import React, {ReactElement} from 'react';
 import logo from '../assets/logo_coffee_hub.png'
 
 export interface LogoHeaderProps {
+    /**
+     * The height of the header.
+     */
     height: string;
+    /**
+     * The text to be displayed on the right side of the header.
+     */
     text?: string;
 }
 
+/**
+ * The logo and header component used on any sub page of the application.
+ * @param props
+ * @constructor
+ */
 export function LogoHeader(props: LogoHeaderProps): ReactElement {
 
     return (

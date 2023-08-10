@@ -3,7 +3,9 @@ import {PicoConfigComponent} from "../components/PicoConfigComponent";
 import {PicoConfigDto} from "../model/pico-config-dto";
 import BackendService from "../service/BackendService";
 
-
+/**
+ * "Pico config" page container.
+ */
 export function PicoConfigPage(): ReactElement {
 
     const [config, setConfig] = useState<PicoConfigDto>();
@@ -11,7 +13,7 @@ export function PicoConfigPage(): ReactElement {
 
 
     useEffect(() => {
-        BackendService.getPicoConfig().then((response) => {
+        BackendService.getCoffeeHubConfig().then((response) => {
             setConfig(response);
         })
     }, [])
@@ -30,7 +32,7 @@ export function PicoConfigPage(): ReactElement {
 
 
     function onSaveConfig(config: PicoConfigDto): void {
-        BackendService.putPicoConfig(config).then((newConfig) => {
+        BackendService.setCoffeeHubConfig(config).then((newConfig) => {
             setConfig(newConfig);
             setShowAlert(true);
         })

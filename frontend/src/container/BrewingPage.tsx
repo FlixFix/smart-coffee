@@ -1,14 +1,14 @@
 import React, {ReactElement, useEffect, useState} from 'react';
 import {BrewingComponent} from "../components/BrewingComponent";
-import {CoffeeHubConfigDto} from "../model/coffee-hub-config-dto";
 import BackendService from "../service/BackendService";
+import {PicoConfigDto} from "../model/pico-config-dto";
 
-export interface BrewingPageProps {
-}
+/**
+ * "Zubereitung" page container.
+ */
+export function BrewingPage(): ReactElement {
 
-export function BrewingPage(props: BrewingPageProps): ReactElement {
-
-    const [config, setConfig] = useState<CoffeeHubConfigDto>();
+    const [config, setConfig] = useState<PicoConfigDto>();
     const [showAlert, setShowAlert] = useState(false);
 
     useEffect(() => {
@@ -29,7 +29,7 @@ export function BrewingPage(props: BrewingPageProps): ReactElement {
         }
     }, [showAlert]);
 
-    function onClickSave(config: CoffeeHubConfigDto): void {
+    function onClickSave(config: PicoConfigDto): void {
         BackendService.setCoffeeHubConfig(config).then((newConfig) => {
             setConfig(newConfig);
             setShowAlert(true);

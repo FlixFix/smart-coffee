@@ -1,15 +1,28 @@
 import React, {ReactElement, useState} from 'react';
 import {LogoHeader} from "./LogoHeader";
 import {Alert, Button, TextField} from "@mui/material";
-import {CoffeeHubConfigDto} from "../model/coffee-hub-config-dto";
 import {IconCoffee, IconTemperature} from "@tabler/icons-react";
+import {PicoConfigDto} from "../model/pico-config-dto";
 
 export interface BrewingComponentProps {
-    config: CoffeeHubConfigDto;
-    onClickSave: (config: CoffeeHubConfigDto) => void;
+    /**
+     * The current pico config.
+     */
+    config: PicoConfigDto;
+    /**
+     * onClick event handler for clicking the save button.
+     * @param config the updated config dto.
+     */
+    onClickSave: (config: PicoConfigDto) => void;
+    /**
+     * If true, the successfully saved alert will be shown.
+     */
     showAlert: boolean;
 }
 
+/**
+ * Component for the "Zubereitung" page.
+ */
 export function BrewingComponent(props: BrewingComponentProps): ReactElement {
 
     const [brewingTemp, setBrewingTemp] = useState(props.config.brewTemp);

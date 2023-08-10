@@ -2,7 +2,6 @@ import {DeviceStatusDto} from "../model/device-status-dto";
 import axios from 'axios';
 import {PicoStatusDto} from "../model/pico-status-dto";
 import {BrewTypeEnum} from "../model/brew-type-enum";
-import {CoffeeHubConfigDto} from "../model/coffee-hub-config-dto";
 import {DateTime} from "luxon";
 import {TemperatureDto} from "../model/temperature-dto";
 import {PicoConfigDto} from "../model/pico-config-dto";
@@ -45,8 +44,8 @@ class BackendService {
             .catch((e) => {console.log(e)});
     }
 
-    static clean(): Promise<any> {
-        return axios.get(`${API_PATH}/clean`)
+    static cancelBrewing(): Promise<any> {
+        return axios.delete(`${API_PATH}/brew`)
             .then((response) => response.data)
             .catch((e) => {console.log(e)});
     }
@@ -57,23 +56,15 @@ class BackendService {
             .catch((e) => {console.log(e)});
     }
 
-    static getCoffeeHubConfig(): Promise<CoffeeHubConfigDto> {
+    static getCoffeeHubConfig(): Promise<PicoConfigDto> {
         return axios.get(`${API_PATH}/config`).then((res) => res.data).catch((e) => console.log(e));
     }
 
-    static getPicoConfig(): Promise<PicoConfigDto> {
-        return axios.get(`${API_PATH}/pico-config`).then((res) => res.data).catch((e) => console.log(e));
-    }
-
-    static putPicoConfig(config: PicoConfigDto): Promise<PicoConfigDto> {
-        return axios.put(`${API_PATH}/pico-config`, config).then((res) => res.data).catch((e) => console.log(e));
-    }
-
-    static setCoffeeHubConfig(config: CoffeeHubConfigDto): Promise<CoffeeHubConfigDto> {
+    static setCoffeeHubConfig(config: PicoConfigDto): Promise<PicoConfigDto> {
         return axios.put(`${API_PATH}/config`, config).then((res) => res.data).catch((e) => console.log(e));
     }
 
-    static resetCoffeeHubConfig(config: CoffeeHubConfigDto): Promise<CoffeeHubConfigDto> {
+    static resetCoffeeHubConfig(): Promise<PicoConfigDto> {
         return axios.delete(`${API_PATH}/config`).then((res) => res.data).catch((e) => console.log(e));
     }
 }

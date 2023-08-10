@@ -3,7 +3,9 @@ import React, {ReactElement} from 'react';
 import {LogoHeader} from "./LogoHeader";
 import {IconCopyright, IconGitCommit, IconVersions} from "@tabler/icons-react";
 
-
+/**
+ * Component for the "About" page.
+ */
 export function AboutComponent(): ReactElement {
 
     const versionString = `${process.env.REACT_APP_APP_MAJOR_VERSION}.${process.env.REACT_APP_APP_MINOR_VERSION}.${process.env.REACT_APP_APP_HOTFIX_VERSION}`

@@ -7,6 +7,8 @@ This app adds IoT to a Rancilio Silvia espresso machine. However, it can also be
 * The backend application in form of a Node.js application handling communication between the frontend and the microcontroller and doing some configuration and automation handling. 
 * The frontend react app providing an easy user interface for the smart control of the coffee machine.
 
+To get started ASAP look [QUICKSTART.md](QUICKSTART.md) to get a step-by-step guide to get you started quickly and set up the hardware as well as the software.
+
 ## 🍬 Main features
 
 The main features of this setup are:
@@ -27,7 +29,8 @@ The documentation within the code is not yet properly, since this project is onl
 * For the frontend: [README.md](frontend%2FREADME.md)
 * For the evaluation script: [README.md](eval%2FREADME.md)
 
-# ☕️ Setup
+
+# ☕️ The built
 The microcontroller resides inside the Rancilio Silvia and has the following devices connected:
 
 * a relais, which handles turning on and off the machine
@@ -56,9 +59,7 @@ In order to evaluate the PID controller such as tuning it properly an evaluation
 
 # ☕️ Space for improvement
 This is my first time working with microcontrollers and also Node.js, therefore in the development process I already got a lot of ideas for various improvements, which are:
-* refactor the web server on the pico to use an actual web server library, which is provided by asyncio
-* do not store configuration on the pico and the backend, do this solely on the pico
-* let the pico then handle turning on and off the machine based on idle time, which also reduces the complexity in the backend code
+* refactor the web server on the pico to use an actual web server library, which is provided by asyncio i.e.
 * Remove the web socket between frontend and backend and let the frontend directly communicate with the MQTT broker
 
 I am happy for any contributions and critics!

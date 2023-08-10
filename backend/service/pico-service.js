@@ -1,17 +1,25 @@
 #!/usr/bin/env node
-const {put, get} = require("axios");
-
+const { get, put} = require("axios");
+const axios = require("axios");
 
 async function getPicoStatus() {
     return await picoStatus();
+}
+
+async function getPicoHealth() {
+    return await picoHealth();
 }
 
 async function getDeviceStatus(deviceNumber) {
     return await deviceStatus(deviceNumber);
 }
 
-async function picoBrewCoffee(duration) {
-    return await doBrewCoffee(duration);
+async function picoBrewCoffee(type) {
+    return await doBrewCoffee(type);
+}
+
+async function picoCancelBrewing() {
+    return await doDeleteBrew();
 }
 
 async function getTemperature() {
@@ -22,19 +30,19 @@ async function getReferenceTemperature() {
     return await refTemperature();
 }
 
-async function turnMachineOn(kP, kI, kD, brewTemp) {
-    return await turnOn(kP, kI, kD, brewTemp);
+async function turnMachineOn() {
+    return await turnOn();
 }
 
 async function updateConfig(config) {
-    return await doConfig(config)
+    return await doPutConfig(config)
 }
 
 async function getConfig() {
     return await doGetConfig()
 }
 
-const doConfig = async (config) => {
+const doPutConfig = async (config) => {
     return await put(`http://${process.env.PICO_IP}:${process.env.PICO_PORT}/pico/config`, config)
         .then((res) => res.data
         )
@@ -69,6 +77,15 @@ async function picoStatus() {
         });
 }
 
+
+async function picoHealth() {
+    return await get(`http://${process.env.PICO_IP}:${process.env.PICO_PORT}/pico/health`)
+        .then((res) => res)
+        .catch((err) => {
+            console.error(err);
+        });
+}
+
 async function deviceStatus(deviceNumber) {
    return await get(`http://${process.env.PICO_IP}:${process.env.PICO_PORT}/devices/status/${deviceNumber}`, {})
         .then((res) => res.data)
@@ -93,16 +110,24 @@ async function refTemperature() {
         });
 }
 
-async function doBrewCoffee(duration) {
-    return await get(`http://${process.env.PICO_IP}:${process.env.PICO_PORT}/pico/brew?duration=${duration}`)
+async function doBrewCoffee(type) {
+    return await get(`http://${process.env.PICO_IP}:${process.env.PICO_PORT}/pico/brew?type=${type}`)
         .then((res) => res.data)
         .catch((err) => {
             console.error(err);
         });
 }
 
-async function turnOn(kP, kI, kD, brewTemp) {
-    return await get(`http://${process.env.PICO_IP}:${process.env.PICO_PORT}/pico/on?kP=${kP}&kI=${kI}&kD=${kD}&brewTemp=${brewTemp}`)
+async function doDeleteBrew() {
+    return await axios.delete(`http://${process.env.PICO_IP}:${process.env.PICO_PORT}/pico/brew`)
+        .then((res) => res.data)
+        .catch((err) => {
+            console.error(err);
+        });
+}
+
+async function turnOn() {
+    return await get(`http://${process.env.PICO_IP}:${process.env.PICO_PORT}/pico/on`)
         .then((res) => res.data)
         .catch((err) => {
             console.error(err);
@@ -118,3 +143,5 @@ exports.getReferenceTemperature = getReferenceTemperature;
 exports.turnMachineOn = turnMachineOn;
 exports.updateConfig = updateConfig;
 exports.getConfig = getConfig;
+exports.cancelBrewing = picoCancelBrewing;
+exports.getPicoHealth = getPicoHealth;

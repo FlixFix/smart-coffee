@@ -1,1 +1,25 @@
-{"scheduled":true,"timesOn":["06:00","09:27"],"idleTime":200,"singleBrewTime":5,"doubleBrewTime":28,"brewTemp":85,"daysOn":[3],"pidKP":48,"pidKI":0.192,"pidKD":2880}
+{
+  "mqttIp": "192.168.178.146",
+  "idleTime": 60,
+  "mqttTopic": "pico_log",
+  "requestLogging": true,
+  "wlanSsid": "WgLan",
+  "pidControlLogging": false,
+  "mqtt": false,
+  "pidLogging": false,
+  "doubleBrewTime": 28,
+  "wlanPw": "!35JuAlLiFe35!",
+  "infoLogging": true,
+  "brewTemp": 93,
+  "pidKP": 48,
+  "singleBrewTime": 5,
+  "pidKI": 0.192,
+  "pidKD": 2880,
+  "timesOn": [
+    "06:00",
+    "09:27"
+  ],
+  "daysOn": [
+    3
+  ]
+}

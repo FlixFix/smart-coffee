@@ -2,16 +2,34 @@ import React, {ReactElement, useEffect, useState} from 'react';
 import {LogsComponent} from "../components/LogsComponent";
 import {DateTime} from "luxon";
 
+/**
+ * The type of the Log messages.
+ */
 enum LogType {
     PICO = 'PICO'
 }
 
+/**
+ * Interface defining a single log entry.
+ */
 export interface LogEntry {
-    type: LogType,
-    message: string,
-    timeStamp: string | null
+    /**
+     * type of the log entry.
+     */
+    type: LogType;
+    /**
+     * Log message,
+     */
+    message: string;
+    /**
+     * Timestamp of the log message,
+     */
+    timeStamp: string | null;
 }
 
+/**
+ * "Logs" page container.
+ */
 export function LogsPage(): ReactElement {
 
     const [logEntries, setLogEntries] = useState<LogEntry[]>([]);

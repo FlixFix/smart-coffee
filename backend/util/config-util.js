@@ -18,12 +18,6 @@ function writeConfig(config) {
     return readConfig();
 }
 
-function setConfigValue(key, value) {
-    let currentConfig = readConfig();
-    currentConfig[key] = value;
-    writeConfig(currentConfig);
-}
-
 function deleteConfig() {
     if (existsSync('service/config.json')) {
         console.log('resetting config to default values!')

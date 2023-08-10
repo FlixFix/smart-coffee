@@ -10,6 +10,7 @@ connected_to_wifi = False
 def connect_to_network():
     global connected_to_wifi
 
+    network.hostname(config.PICO_HOSTNAME)
     config.wlan.active(True)
     config.wlan.config(pm=0xa11140)  # Disable power-save mode
     config.wlan.connect(config.CURRENT_CONFIG.wlan_ssid, config.CURRENT_CONFIG.wlan_pw)

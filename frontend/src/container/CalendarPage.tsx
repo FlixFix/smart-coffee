@@ -1,14 +1,14 @@
 import React, {ReactElement, useEffect, useState} from 'react';
 import {CalendarComponent} from "../components/CalendarComponent";
-import {CoffeeHubConfigDto} from "../model/coffee-hub-config-dto";
 import BackendService from "../service/BackendService";
+import {PicoConfigDto} from "../model/pico-config-dto";
 
-export interface CalendarPageProps {
-}
+/**
+ * "Zeitsteuerung" page container.
+ */
+export function CalendarPage(): ReactElement {
 
-export function CalendarPage(props: CalendarPageProps): ReactElement {
-
-    const [config, setConfig] = useState<CoffeeHubConfigDto>();
+    const [config, setConfig] = useState<PicoConfigDto>();
     const [showAlert, setShowAlert] = useState(false);
 
 
@@ -31,7 +31,7 @@ export function CalendarPage(props: CalendarPageProps): ReactElement {
     }, [showAlert]);
 
 
-    function onClickSave(config: CoffeeHubConfigDto): void {
+    function onClickSave(config: PicoConfigDto): void {
         BackendService.setCoffeeHubConfig(config).then((newConfig) => {
             setConfig(newConfig);
             setShowAlert(true);

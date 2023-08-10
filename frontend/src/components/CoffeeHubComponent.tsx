@@ -12,17 +12,30 @@ import {
 } from "@tabler/icons-react";
 
 import logo from '../assets/logo_coffee_hub.png'
-import {CoffeeHubConfigDto} from "../model/coffee-hub-config-dto";
+import {PicoConfigDto} from "../model/pico-config-dto";
 
 // the required distance between touchStart and touchEnd to be detected as a swipe
 const minSwipeDistance = 50
 
 export interface CoffeeHubComponentProps {
+    /**
+     * The current displayed content.
+     */
     content: ReactNode;
-    config: CoffeeHubConfigDto;
+    /**
+     * The current config.
+     */
+    config: PicoConfigDto;
+    /**
+     * onClick event handler for clicking a menu item.
+     * @param key the key of the clicked menu item.
+     */
     onClickMenuItem: (key: string) => void;
 }
 
+/**
+ * Main frontend component representing the basic app shell and containing the slide out menu.
+ */
 function CoffeeHubComponent(props: CoffeeHubComponentProps) {
     const [open, setOpen] = useState(false);
 

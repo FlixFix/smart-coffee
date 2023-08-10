@@ -58,15 +58,14 @@ async def smart_coffee_loop():
                                                   last_temp=temperature)
             output = config.pid_controller(float(temperature))
             logger.pid_control(str(temperature), str(output))
-            logger.info('The PID components are: ' + str(config.pid_controller.components))
+            logger.pid('The PID components are: ' + str(config.pid_controller.components))
 
-            heating_on = 0
             if output > 0:
                 heating_on = 1
-                logger.info('keep heating up...')
+                logger.pid('keep heating up...')
             else:
                 heating_on = 0
-                logger.info('turn heating off.')
+                logger.pid('turn heating off.')
 
             Pin(config.pin_heat, Pin.OUT, value=heating_on)
         else:

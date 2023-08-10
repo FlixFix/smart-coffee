@@ -101,3 +101,35 @@ svg.icon-heat {
   overflow-y: scroll;
   height: 500px;
 }
+
+.indicator-NOT_READY {
+  width: 10px;
+  height: 10px;
+  background-color: #ff6188;
+  border-radius: 5px;
+  -webkit-animation: fadeinout 3s linear forwards;
+  animation: fadeinout 3s linear forwards;
+  animation-iteration-count: infinite;
+  opacity: 0;
+}
+
+.indicator-OPTIMAL {
+  width: 10px;
+  height: 10px;
+  background-color: #137e48;
+  border-radius: 5px;
+}
+
+.indicator-READY {
+  width: 10px;
+  height: 10px;
+  background-color: #e09c09;
+  border-radius: 5px;
+}
+
+.tank-chip {
+  border-width: 1px;
+  border-style: solid;
+  border-radius: 15px;
+  border-color: $dark-brown;
+}

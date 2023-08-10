@@ -1,18 +1,22 @@
 import React, {ReactElement, useEffect, useState} from 'react';
 import {PIDComponent} from "../components/PIDComponent";
-import {ChartData} from "chart.js";
 import {useInterval} from "../hooks/use-interval-hook";
 import BackendService from "../service/BackendService";
 import {TemperatureDto} from "../model/temperature-dto";
-import {CoffeeHubConfigDto} from "../model/coffee-hub-config-dto";
 import {DeviceStatusDto} from "../model/device-status-dto";
+import {PicoConfigDto} from "../model/pico-config-dto";
 
-
-
+/**
+ * Interval for retrieving temperature from the backend/pico. Attention: A lower value results
+ * in more requests to the pico.
+ */
 const TEMP_INTERVAL = 1000;
 
+/**
+ * "PICO" page container.
+ */
 export function PIDPage(): ReactElement {
-    const [config, setConfig] = useState<CoffeeHubConfigDto>();
+    const [config, setConfig] = useState<PicoConfigDto>();
     const [showAlert, setShowAlert] = useState(false);
 
     const [tempArray, setTempArray] = useState<number[]>([]);
@@ -50,7 +54,7 @@ export function PIDPage(): ReactElement {
     }
 
 
-    function onClickSave(config: CoffeeHubConfigDto): void {
+    function onClickSave(config: PicoConfigDto): void {
         BackendService.setCoffeeHubConfig(config).then((newConfig) => {
             setConfig(newConfig);
             setShowAlert(true);
@@ -87,18 +91,18 @@ export function PIDPage(): ReactElement {
                               showAlert={showAlert}
                               config={config}
                               data={
-                    {
-                        labels: labelArray,
-                        datasets: [
-                            {
-                                label: 'Temperaturverlauf',
-                                data: tempArray,
-                                borderColor: 'rgba(19, 126, 72, 0.42)',
-                                backgroundColor: 'rgba(19, 126, 72, 0.42)',
-                            }
-                        ],
-                    }
-                }/>}
+                                  {
+                                      labels: labelArray,
+                                      datasets: [
+                                          {
+                                              label: 'Temperaturverlauf',
+                                              data: tempArray,
+                                              borderColor: 'rgba(19, 126, 72, 0.42)',
+                                              backgroundColor: 'rgba(19, 126, 72, 0.42)',
+                                          }
+                                      ],
+                                  }
+                              }/>}
         </>
     )
 }

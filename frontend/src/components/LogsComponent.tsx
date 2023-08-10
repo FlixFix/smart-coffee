@@ -3,9 +3,15 @@ import {LogEntry} from "../container/LogsPage";
 import {LogoHeader} from "./LogoHeader";
 
 export interface LogsComponentProps {
+    /**
+     * Array containing all the log entries to be displayed.
+     */
     logEntries: LogEntry[];
 }
 
+/**
+ * The component for the "Logs" page.
+ */
 export function LogsComponent(props: LogsComponentProps): ReactElement {
 
 function getFormattedLogMessage(logEntry: LogEntry): ReactElement {

@@ -29,6 +29,9 @@ const root = ReactDOM.createRoot(
     document.getElementById('root') as HTMLElement
 );
 
+/**
+ * Sets the main colour for the MUI components.
+ */
 const theme = createTheme({
     palette: {
         primary: {

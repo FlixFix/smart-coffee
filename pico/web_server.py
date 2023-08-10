@@ -8,8 +8,7 @@ import utime
 import json
 import config
 from config import relais_io, relais_pump, relais_heat, rtc, CURRENT_CONFIG, pin_sensor_ref, \
-    pin_sensor_tank, \
-    print_to_console, temp_sensor_resolution
+    pin_sensor_tank, print_to_console, temp_sensor_resolution, tank_toggle
 import logger
 import config_helper
 from PID import PID
@@ -19,6 +18,7 @@ brew_duration: int = -1
 brew_start_time: int = -1
 
 PICO_STATUS_PATH = '/pico/status'
+PICO_HEALTH_PATH = '/pico/health'
 PICO_ON_PATH = '/pico/on'
 PICO_CONFIG_PATH = '/pico/config'
 PICO_LOGGING_PATH = '/pico/logging'
@@ -35,6 +35,8 @@ def get_device_response(device_number):
         return DeviceStatus(device_number, relais_pump.value())
     elif device_number == '2':
         return DeviceStatus(device_number, relais_heat.value())
+    elif device_number == '3':
+        return DeviceStatus(device_number, tank_toggle.value())
     else:
         print("No device with number " + str(device_number) + " exists!")
 
@@ -61,14 +63,20 @@ async def serve_client(reader, writer):
     request_method = httpUtils.get_request_method(request.lstrip())
     request_path = httpUtils.get_request_path(request.lstrip())
 
-    if request_method == 'GET' and request_path == PICO_STATUS_PATH:
+    if request_method == 'GET' and request_path == PICO_HEALTH_PATH:
+        await handle_get_pico_health(reader, writer)
+
+    elif request_method == 'GET' and request_path == PICO_STATUS_PATH:
         await handle_get_pico_status(reader, writer)
 
     elif request_method == 'GET' and PICO_ON_PATH in request_path:
-        await handle_get_pico_on(reader, request_path, writer)
+        await handle_get_pico_on(reader, writer)
 
     elif request_method == 'GET' and PICO_BREW_PATH in request_path:
         await handle_get_pico_brew(reader, request_path, writer)
+
+    elif request_method == 'DELETE' and PICO_BREW_PATH in request_path:
+        await handle_delete_pico_brew(reader, writer)
 
     elif request_method == 'GET' and PICO_TEMPERATURE_PATH in request_path:
         await handle_get_pico_temperature(reader, writer)
@@ -143,60 +151,79 @@ async def handle_put_device_status(reader, writer):
 
 
 async def handle_put_pico_config(reader, writer):
-    data = await reader.read(500)
+    data = await reader.read(900)
     data_array = str(data).split('\\r\\n')
     parsed_request_body = data_array[-1].replace('\\n', '').replace('    ', '').replace('\'', '')
     body_as_json = json.loads(parsed_request_body)
     CURRENT_CONFIG.mqtt = body_as_json['mqtt']
-    CURRENT_CONFIG.request_logging = body_as_json['request_logging']
-    CURRENT_CONFIG.pid_logging = body_as_json['pid_logging']
-    CURRENT_CONFIG.pid_control_logging = body_as_json['pid_control_logging']
-    CURRENT_CONFIG.info_logging = body_as_json['info_logging']
+    CURRENT_CONFIG.mqtt_topic = body_as_json['mqttTopic']
+    CURRENT_CONFIG.mqtt_ip = body_as_json['mqttIp']
+    CURRENT_CONFIG.request_logging = body_as_json['requestLogging']
+    CURRENT_CONFIG.pid_logging = body_as_json['pidLogging']
+    CURRENT_CONFIG.pid_control_logging = body_as_json['pidControlLogging']
+    CURRENT_CONFIG.info_logging = body_as_json['infoLogging']
+
+    CURRENT_CONFIG.idle_time = float(body_as_json['idleTime'])
+    CURRENT_CONFIG.single_brew_time = float(body_as_json['singleBrewTime'])
+    CURRENT_CONFIG.double_brew_time = float(body_as_json['doubleBrewTime'])
+    CURRENT_CONFIG.brew_temp = float(body_as_json['brewTemp'])
+    CURRENT_CONFIG.pid_KP = float(body_as_json['pidKP'])
+    CURRENT_CONFIG.pid_KI = float(body_as_json['pidKI'])
+    CURRENT_CONFIG.pid_KD = float(body_as_json['pidKD'])
+
     if print_to_console is True:
         print(str(CURRENT_CONFIG.__dict__))
     config_helper.write_config(CURRENT_CONFIG)
+    config_helper.read_config()
 
     writer.write('HTTP/1.0 200 OK\r\nContent-type: application/json\r\n\r\n')
     writer.write(httpUtils.write_response(CURRENT_CONFIG))
-    2
 
 
 async def handle_get_pico_config(reader, writer):
     await read_complete_request(reader)
 
     writer.write('HTTP/1.0 200 OK\r\nContent-type: application/json\r\n\r\n')
-    writer.write(httpUtils.write_response(CURRENT_CONFIG))
+    writer.write(json.dumps(config.CURRENT_CONFIG.__dict__))
 
 
 async def handle_get_pico_brew(reader, request_path, writer):
     await read_complete_request(reader)
-    brew_time = request_path[request_path.rfind('=') + 1:]
-    brew_coffee(brew_time)
+    brew_type = request_path[request_path.rfind('=') + 1:]
+    brew_coffee(brew_type)
     writer.write('HTTP/1.0 200 OK\r\nContent-Length: 0\r\n\r\n')
 
 
-async def handle_get_pico_on(reader, request_path, writer):
+async def handle_delete_pico_brew(reader, writer):
+    await read_complete_request(reader)
+    cancel_brewing()
+    writer.write('HTTP/1.0 200 OK\r\nContent-Length: 0\r\n\r\n')
+
+
+async def handle_get_pico_on(reader, writer):
 
     await read_complete_request(reader)
-    params = httpUtils.extract_search_parameters(request_path)
     # set parameters to the PIDController object
-    tunings = (float(params.get('kP')), float(params.get('kI')), float(params.get('kD')))
-    brew_temp = float(params.get('brewTemp'))
+    tunings = (config.CURRENT_CONFIG.pid_KP, config.CURRENT_CONFIG.pid_KI, config.CURRENT_CONFIG.pid_KD)
+    brew_temp = config.CURRENT_CONFIG.brew_temp
+
     config.pid_controller = PID(tunings[0], tunings[1], tunings[2], setpoint=brew_temp, scale='ms')
-    # pid_controller.tunings = (float(params.get('kP')), float(params.get('kI')), float(params.get('kD')))
-    # pid_controller.setpoint = float(params.get('brewTemp'))
-    # pid_controller.error_map = None
-    # pid_controller.output_limits = (None, 50000)
-    log_message = "Started PID with values: kp=" + str(params.get('kP')) + " ki=" + str(
-        params.get('kI')) + " kd=" + str(params.get('kD'))
+
+    log_message = "Started PID with values: kp=" + str(config.CURRENT_CONFIG.pid_KP) + " ki=" + str(
+        config.CURRENT_CONFIG.pid_KI) + " kd=" + str(config.CURRENT_CONFIG.pid_KD)
     logger.pid(log_message)
     if print_to_console is True:
         print(log_message)
-    logger.pid('Desired temperature is: ' + params.get('brewTemp'))
+    logger.pid('Desired temperature is: ' + str(brew_temp))
     status = set_device_status(DeviceStatus('0', 1))
     write_toggle_message(status)
     writer.write('HTTP/1.0 200 OK\r\nContent-type: application/json\r\n\r\n')
     writer.write(httpUtils.write_response(status))
+
+
+async def handle_get_pico_health(reader, writer):
+    await read_complete_request(reader)
+    writer.write('HTTP/1.0 200 OK\r\nContent-Length: 0\r\n\r\n')
 
 
 async def handle_get_pico_status(reader, writer):
@@ -204,7 +231,8 @@ async def handle_get_pico_status(reader, writer):
     device_1_status = get_device_response('0')
     device_2_status = get_device_response('1')
     device_3_status = get_device_response('2')
-    status = [device_1_status, device_2_status, device_3_status]
+    device_4_status = get_device_response('3')
+    status = [device_1_status, device_2_status, device_3_status, device_4_status]
     pico_status = PicoStatus(status, rtc.datetime())
     writer.write('HTTP/1.0 200 OK\r\nContent-type: application/json\r\n\r\n')
     writer.write(str(pico_status.to_json()))
@@ -232,10 +260,22 @@ def write_toggle_message(new_status):
             print("No device with number " + str(new_status.device_number) + " exists!")
 
 
-def brew_coffee(duration):
+def brew_coffee(brew_type):
     global brew_duration, brew_start_time
+
+    if brew_type == 'single':
+        brew_duration = float(config.CURRENT_CONFIG.single_brew_time) * 1000
+    else:
+        brew_duration = float(config.CURRENT_CONFIG.double_brew_time) * 1000
+
     brew_start_time = utime.ticks_ms()
-    brew_duration = float(duration) * 1000
+
+
+def cancel_brewing():
+    global brew_start_time, brew_duration
+    brew_start_time = -1
+    brew_duration = -1
+    Pin(config.pin_pump, Pin.OUT, value=0)
 
 
 def read_raw_temp(sensor_pin):
