@@ -31,7 +31,7 @@ pin_heat = 13
 pin_tank = 22
 # ---------------------------------------------------
 
-# temperature sensors
+# temperature sensors -------------------------------
 pin_sensor_tank = 16
 pin_sensor_ref = 21
 temp_sensor_resolution = 10

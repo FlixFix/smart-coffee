@@ -67,7 +67,7 @@ async function scheduleMachine() {
 
 function currentTimeInConfiguredTimes(config) {
     const currentTime = DateTime.local().toFormat("HH:mm");
-    const currentDay = DateTime.local().day % 6;
+    const currentDay = DateTime.local().weekday;
 
     // check day
     if (!config.daysOn.includes(currentDay)) {
@@ -85,9 +85,6 @@ async function brewCoffee(coffeeType) {
     await picoBrewCoffee(coffeeType);
 }
 
-async function cancelBrewing() {
-    await doDeleteBrew();
-}
 
 async function getMachineStatus() {
     const machineStatus = await getDeviceStatus('0');
