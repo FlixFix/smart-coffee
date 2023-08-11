@@ -5,7 +5,7 @@ const express = require("express");
 const {writeConfig, readConfig, deleteConfig} = require("../util/config-util");
 const {
     getPicoStatus, setDeviceStatus, getTemperature, turnMachineOn,
-    getReferenceTemperature, updateConfig, cancelBrewing, getPicoHealth
+    getReferenceTemperature, updateConfig, cancelBrewing, getPicoHealth, picoBrewCoffee
 } = require("../service/pico-service");
 const {brewCoffee, setOnTime, getOnTime} = require("../service/coffee-service");
 const {resolve} = require("path");
@@ -19,14 +19,19 @@ require('dotenv').config({path: '.env'})
 
 init()
 
-
+// initialize application port
 const PORT = process.env.PORT || 3001;
 
+// initialize express
 const app = express();
 app.use(express.json());
 
+// use frontend components to be served directly from the backend
 app.use(express.static(resolve(__dirname, '../../frontend/build')));
 
+/**
+ * Returns the pico status containing the status of all the devices attached to the pico and the current pico system time.
+ */
 app.get("/coffee-hub/api/v1/pico-status", (req, res) => {
     getPicoStatus().then((response) => {
         res.status(200);
@@ -34,11 +39,17 @@ app.get("/coffee-hub/api/v1/pico-status", (req, res) => {
     });
 });
 
+/**
+ * Returns the current on-timer of the coffee machine or an empty json, if the machine is turned off.
+ */
 app.get("/coffee-hub/api/v1/on-status", (req, res) => {
     res.status(200);
     res.json(getOnTime() !== null ? getOnTime() : json());
 });
 
+/**
+ * Returns a temperature-dto containing the temperature of the temperature sensor attached to the boiler.
+ */
 app.get("/coffee-hub/api/v1/temperature", (req, res) => {
     getTemperature().then((temp) => {
         res.status(200);
@@ -48,6 +59,9 @@ app.get("/coffee-hub/api/v1/temperature", (req, res) => {
     })
 });
 
+/**
+ * Returns a temperature-dto containing the temperature of the reference temperature sensor attached to the bottom of the machine.
+ */
 app.get("/coffee-hub/api/v1/reference-temperature", (req, res) => {
     getReferenceTemperature().then((temp) => {
         res.status(200);
@@ -57,9 +71,13 @@ app.get("/coffee-hub/api/v1/reference-temperature", (req, res) => {
     })
 });
 
+/**
+ * Starts the brewing process on the pico either a single or a double shot. The type of the coffee, is determined by
+ * a query parameter being either sigle or double. Once brewing is done, the pump will turn off automatically.
+ */
 app.get("/coffee-hub/api/v1/brew", (req, res) => {
     const type = req.query.type;
-    brewCoffee(type).then(() => {
+    picoBrewCoffee(type).then(() => {
         res.status(201);
         res.json();
     }).catch(() => {
@@ -67,6 +85,9 @@ app.get("/coffee-hub/api/v1/brew", (req, res) => {
     })
 });
 
+/**
+ * Force cancels the current brewing process by turning off the pump.
+ */
 app.delete("/coffee-hub/api/v1/brew", (req, res) => {
     cancelBrewing().then(() => {
         res.status(200);
@@ -76,6 +97,10 @@ app.delete("/coffee-hub/api/v1/brew", (req, res) => {
     })
 });
 
+/**
+ * Updates the status of a device attached to the pico based on a device-status-dto. If the device is the I/O device
+ * the coffee machine will be turned on and the heating process is started (handled by the pico).
+ */
 app.put("/coffee-hub/api/v1/devices", (req, res) => {
     console.log(`setting status: ${req.body.value} for device ${req.body.device_number}`);
     if (req.body.device_number === '0' && req.body.value === 1) {
@@ -97,6 +122,10 @@ app.put("/coffee-hub/api/v1/devices", (req, res) => {
     }
 });
 
+/**
+ * Updates the config on the pico based on a pico-config-dto. The config will also be written to the backend in the
+ * config.json in case the pico has to be re-flashed and to keep the config.
+ */
 app.put("/coffee-hub/api/v1/config", (req, res) => {
     if (req.body) {
         // send the config to the pico
@@ -115,11 +144,18 @@ app.put("/coffee-hub/api/v1/config", (req, res) => {
     }
 });
 
+/**
+ * Gets the current pico-config from the backend, which is always in sync with the config on the pico.
+ */
 app.get("/coffee-hub/api/v1/config", (req, res) => {
     res.json(readConfig());
     res.status(200);
 });
 
+/**
+ * Deletes the current custom config and resets it to the default config inside default_config.json. The default config will
+ * then also be sent to the pico.
+ */
 app.delete("/coffee-hub/api/v1/config", (req, res) => {
     if (req.body) {
         deleteConfig();
@@ -136,6 +172,9 @@ app.delete("/coffee-hub/api/v1/config", (req, res) => {
     }
 });
 
+/**
+ * Start the webserver on the configured port.
+ */
 app.listen(PORT, () => {
     console.log(`Server listening on ${PORT}`);
 });
@@ -146,6 +185,7 @@ app.get('*', (req, res) => {
 });
 
 
+// this code opens a websocket to broadcast MQTT messages received from the broker to the frontend
 const WebSocket = require('ws');
 
 const wss = new WebSocket.Server({port: 7071});
@@ -164,6 +204,9 @@ function sendMessageToClients(message) {
     });
 }
 
+/**
+ * Connects the backend to the MQTT broker.
+ */
 mqttClient.on('connect', () => {
     console.log('Successfully connected to MQTT broker.');
     mqttClient.subscribe([process.env.MQTT_TOPIC], () => {
@@ -171,16 +214,25 @@ mqttClient.on('connect', () => {
     })
 })
 
-
+/**
+ * Successful connection message.
+ */
 mqttClient.on('error', (e) => {
     console.log('Could not connect to MQTT broker', e);
 })
 
+/**
+ * When a message from the MQTT broker is received, it will be sent through the websocket as well as written to the log file.
+ */
 mqttClient.on('message', (topic, payload) => {
     logPicoMessage(payload);
     sendMessageToClients(payload);
 })
 
+/**
+ * Initialize functions, which sends the backend config to the pico and checks, whether the connection to the pico was
+ * successful.
+ */
 function init() {
     // check if pico is up and running
     getPicoHealth().then((response) => {

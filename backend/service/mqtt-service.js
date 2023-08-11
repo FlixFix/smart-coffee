@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+// MQTT setup
 const mqtt = require('mqtt')
 require('dotenv').config()
 

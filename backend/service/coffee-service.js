@@ -5,16 +5,32 @@ const {DateTime} = require("luxon");
 
 let deviceOnTime = null;
 
+/**
+ * Sets the on time of the machine to the given value.
+ * @param time the on time to be set.
+ */
 function setOnTime(time) {
     deviceOnTime = time;
 }
 
+/**
+ * Gets the current on time.
+ * @returns {null} the current on time.
+ */
 function getOnTime() {
     return deviceOnTime;
 }
 
+/**
+ * Sets the interval and callback for the scheduled on and off.
+ */
 setInterval(scheduler, 10000);
 
+/**
+ * Main callback for the automated on and off timer. Days and times to which the machine should be turned on, can be set
+ * in the config.json. The complete scheduling can also be turned off through the according value. This methode also takes
+ * care of turning off the machine after the set idle time.
+ */
 async function scheduler() {
     await scheduleMachine();
 
@@ -39,6 +55,9 @@ async function scheduler() {
     console.log('heartbeat <3...')
 }
 
+/**
+ * Turns the machine on and off based on the configured schedule.
+ */
 async function scheduleMachine() {
     const config = readConfig();
     if (config.scheduled === false) {
@@ -65,9 +84,14 @@ async function scheduleMachine() {
     }
 }
 
+/**
+ * Check whether the current time is part of the configured schedule.
+ * @param config the current config.
+ * @returns {boolean} true, if the current time is part of the configured schedule.
+ */
 function currentTimeInConfiguredTimes(config) {
     const currentTime = DateTime.local().toFormat("HH:mm");
-    const currentDay = DateTime.local().weekday;
+    const currentDay = DateTime.local().weekday - 1;
 
     // check day
     if (!config.daysOn.includes(currentDay)) {
@@ -81,11 +105,10 @@ function currentTimeInConfiguredTimes(config) {
     return true;
 }
 
-async function brewCoffee(coffeeType) {
-    await picoBrewCoffee(coffeeType);
-}
-
-
+/**
+ * Gets the current machine status.
+ * @returns {Promise<number|*>} the status of the machine - 0 if the machine is turned off else 1.
+ */
 async function getMachineStatus() {
     const machineStatus = await getDeviceStatus('0');
     if (machineStatus !== undefined) {
@@ -96,6 +119,5 @@ async function getMachineStatus() {
     }
 }
 
-exports.brewCoffee = brewCoffee;
 exports.setOnTime = setOnTime;
 exports.getOnTime = getOnTime;
