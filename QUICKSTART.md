@@ -119,6 +119,15 @@ Compiled with warnings.
 
 ```
 
+## Alternative: Backend serves frontend
+If you only want to run a single service on your machine, the backend is also configured to serve the frontend as well. If you wanna go this way and not have two different javascript applications running (which makes sense for local development, though), do the following:
+* configure backend
+* configure frontend
+* build frontend via ```shell npm run build```
+* start the backend through ```shell npm run start```
+
+The UI of the application is then accessible through ```http://localhost:3001/```, since it's served by the backend.
+
 ## Enjoy your coffee!
 The UI of the application can now be accessed on any browser under (the ip address depends on the machine the application is running on): 
 ```
