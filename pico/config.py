@@ -2,10 +2,10 @@ import network
 from PID import PID
 from machine import Pin, RTC
 
-idle = 60
-single_brew = 15
-double_brew = 28
-temp = 93
+idle = 60  # default idle time
+single_brew = 15  # default brew time for a single shot
+double_brew = 28  # default brew time for a double shot
+temp = 93  # default brewing temperature
 
 # debugging -----------------------------------------
 print_to_console = True
@@ -64,6 +64,23 @@ class CONFIG:
                  mqtt_topic=mqtt_broker_topic, idle_time=idle, single_brew_time=single_brew,
                  double_brew_time=double_brew, brew_temp=temp,
                  pid_KP=kP, pid_KI=kI, pid_KD=kD):
+        """
+        Creates a new config object, which is the used throughout the application to handle configuration values.
+        :param request: if true, requests are logged.
+        :param pid: if true, pid information is logged.
+        :param pid_control: if true, pid output values etc. are logged.
+        :param info: if true, infos are logged.
+        :param mqtt_connect: if true, mqtt is turned on.
+        :param mqtt_ip: the IP address of the mqtt broker machine.
+        :param mqtt_topic: the topic for the MQTT messaging.
+        :param idle_time: the idle time of the machine after which it will turn off automatically (no effect here - handled by the backend)
+        :param single_brew_time: the brewing time for a single shot.
+        :param double_brew_time: the brew time for a double shot.
+        :param brew_temp: the brew temperature.
+        :param pid_KP: the value for the P component of the controller.
+        :param pid_KI: the value for the I component of the controller.
+        :param pid_KD: the value for the D component of the controller.
+        """
         self.request_logging = request
         self.pid_logging = pid
         self.pid_control_logging = pid_control

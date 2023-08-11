@@ -8,6 +8,9 @@ connected_to_wifi = False
 
 
 def connect_to_network():
+    """
+    Tries to connect the pico to the configured wifi network. If Successful, the pico's LED will stop flashing.
+    """
     global connected_to_wifi
 
     network.hostname(config.PICO_HOSTNAME)
@@ -37,6 +40,9 @@ def connect_to_network():
 
 
 def run_server():
+    """
+    Runs the webserver on the pico.
+    """
     ap = network.WLAN(network.AP_IF)
     ap.config(essid=config.PICO_AP_SSID, password=config.PICO_AP_PW)
     ap.active(True)

@@ -10,6 +10,11 @@ PICO_WIFI = '/pico/wifi'
 
 
 async def serve_client(reader, writer):
+    """
+    The main client serving methode, providing the configured access point for inducing network ssid and pw to the pico.
+    :param reader: the read buffer of the current request.
+    :param writer: the write buffer of the current response.
+    """
     request_line = await reader.readline()
     logger.request(str(request_line))
 
@@ -30,6 +35,11 @@ async def serve_client(reader, writer):
 
 
 async def handle_put_pico_wifi(reader, writer):
+    """
+    Handles the put request for configuring the ssid and pw of the local network.
+    :param reader: the read buffer of the current request.
+    :param writer: the write buffer of the current response.
+    """
     data = await reader.read(300)
     data_array = str(data).split('\\r\\n')
     parsed_request_body = data_array[-1].replace('\\n', '').replace('    ', '').replace('\'', '')
@@ -46,4 +56,3 @@ async def handle_put_pico_wifi(reader, writer):
 
     writer.write('HTTP/1.0 200 OK\r\nContent-type: application/json\r\n\r\n')
     writer.write(httpUtils.write_response(CURRENT_CONFIG))
-

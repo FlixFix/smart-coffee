@@ -11,6 +11,9 @@ import wifi
 
 
 def init():
+    """
+    Initializes the config and tries to connect to the local network.
+    """
     config_helper.load_config()
     wifi.connect_to_network()
 
@@ -39,6 +42,9 @@ async def main():
 
 
 async def smart_coffee_loop():
+    """
+    Main method handling all coffee related functions, such as brewing and temperature control.
+    """
     if wifi.connected_to_wifi:
         if web_server.brew_start_time > -1:
             logger.info('Started brewing with a duration of: ' + str(web_server.brew_duration))

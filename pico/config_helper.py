@@ -4,6 +4,9 @@ import logger
 
 
 def load_config():
+    """
+    Loads the current config from config.json or writes the file with the default config, if no config exists yet.
+    """
     try:
         read_config()
     except:
@@ -11,6 +14,9 @@ def load_config():
 
 
 def read_config():
+    """
+    Reads the current config.json file and adjusts the CURRENT_CONFIG accordingly.
+    """
     with open('config.json', 'r') as f:
 
         data = json.load(f)
@@ -33,13 +39,15 @@ def read_config():
         config.CURRENT_CONFIG.pid_KI = data['pid_KI']
         config.CURRENT_CONFIG.pid_KD = data['pid_KD']
 
-
-
         logger.info('loaded config data successfully')
         logger.info(str(config.CURRENT_CONFIG.__dict__))
 
 
 def write_config(update):
+    """
+    Writes the handed config to the config.json.
+    :param update: the updated config.
+    """
     logger.info('writing config file')
     try:
         with open('config.json', 'w') as f:

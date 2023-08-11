@@ -29,6 +29,11 @@ DEVICES_STATUS_PATH = '/devices/status'
 
 
 def get_device_response(device_number):
+    """
+    Returns the device status for a given device.
+    :param device_number: the device number as string.
+    :return: the device status object or null, if an invalid device number was given.
+    """
     if device_number == '0':
         return DeviceStatus(device_number, relais_io.value())
     elif device_number == '1':
@@ -42,6 +47,11 @@ def get_device_response(device_number):
 
 
 def set_device_status(device_status):
+    """
+    Sets the actual status of a device attached to the pico based on the given device status.
+    :param device_status: the new device status.
+    :return: the actual device status after the update.
+    """
     if device_status.device_number == '0':
         Pin(5, Pin.OUT, value=device_status.value)
         return DeviceStatus(device_status.device_number, relais_io.value())
@@ -56,6 +66,11 @@ def set_device_status(device_status):
 
 
 async def serve_client(reader, writer):
+    """
+    The main request handling methode for the pico, handling all incoming requests.
+    :param reader: the read buffer of the current request.
+    :param writer: the write buffer of the current response.
+    """
     request_line = await reader.readline()
     logger.request(str(request_line))
 
@@ -106,13 +121,20 @@ async def serve_client(reader, writer):
 
 
 async def handle_get_devices_status(reader, request_path, writer):
+    """
+    Handles the get device status request and returns an array containing the status of all attached devices.
+    :param request_path:
+    :param reader: the read buffer of the current request.
+    :param writer: the write buffer of the current response.
+    """
     await read_complete_request(reader)
     if request_path == DEVICES_STATUS_PATH:
         # return status for all devices
         device_1_status = get_device_response('0')
         device_2_status = get_device_response('1')
         device_3_status = get_device_response('2')
-        status = [device_1_status, device_2_status, device_3_status]
+        device_4_status = get_device_response('3')
+        status = [device_1_status, device_2_status, device_3_status, device_4_status]
         response = httpUtils.write_array_response(status)
     else:
         # get the id for the requested device
@@ -124,6 +146,11 @@ async def handle_get_devices_status(reader, request_path, writer):
 
 
 async def handle_get_pico_ref_temperature(reader, writer):
+    """
+    Handles the GET pico reference temperature request.
+    :param reader: the read buffer of the current request.
+    :param writer: the write buffer of the current response.
+    """
     await read_complete_request(reader)
     current_temp = Temperature(measure_temp(temp_sensor_resolution, pin_sensor_ref))
     writer.write('HTTP/1.0 200 OK\r\nContent-type: application/json\r\n\r\n')
@@ -131,6 +158,11 @@ async def handle_get_pico_ref_temperature(reader, writer):
 
 
 async def handle_get_pico_temperature(reader, writer):
+    """
+    Handles the GET pico temperature request.
+    :param reader: the read buffer of the current request.
+    :param writer: the write buffer of the current response.
+    """
     await read_complete_request(reader)
     current_temp = Temperature(measure_temp(temp_sensor_resolution, pin_sensor_tank))
     writer.write('HTTP/1.0 200 OK\r\nContent-type: application/json\r\n\r\n')
@@ -138,6 +170,11 @@ async def handle_get_pico_temperature(reader, writer):
 
 
 async def handle_put_device_status(reader, writer):
+    """
+    Handles the PUT device status request and changes the device status on the pico accordingly.
+    :param reader: the read buffer of the current request.
+    :param writer: the write buffer of the current response.
+    """
     data = await reader.read(300)
     data_array = str(data).split('\\r\\n')
     parsed_request_body = data_array[-1].replace('\\n', '').replace('    ', '').replace('\'', '')
@@ -151,6 +188,11 @@ async def handle_put_device_status(reader, writer):
 
 
 async def handle_put_pico_config(reader, writer):
+    """
+    Handles the PUT pico config request, which updates the current config on the pico and updates the config.json.
+    :param reader: the read buffer of the current request.
+    :param writer: the write buffer of the current response.
+    """
     data = await reader.read(900)
     data_array = str(data).split('\\r\\n')
     parsed_request_body = data_array[-1].replace('\\n', '').replace('    ', '').replace('\'', '')
@@ -181,6 +223,11 @@ async def handle_put_pico_config(reader, writer):
 
 
 async def handle_get_pico_config(reader, writer):
+    """
+    Handles the GET pico config request.
+    :param reader: the read buffer of the current request.
+    :param writer: the write buffer of the current response.
+    """
     await read_complete_request(reader)
 
     writer.write('HTTP/1.0 200 OK\r\nContent-type: application/json\r\n\r\n')
@@ -188,6 +235,12 @@ async def handle_get_pico_config(reader, writer):
 
 
 async def handle_get_pico_brew(reader, request_path, writer):
+    """
+    Handles the GET pico brew request and starts brewing coffee.
+    :type request_path: the complete request path as string to determine the brewing type.
+    :param reader: the read buffer of the current request.
+    :param writer: the write buffer of the current response.
+    """
     await read_complete_request(reader)
     brew_type = request_path[request_path.rfind('=') + 1:]
     brew_coffee(brew_type)
@@ -195,13 +248,22 @@ async def handle_get_pico_brew(reader, request_path, writer):
 
 
 async def handle_delete_pico_brew(reader, writer):
+    """
+    Handles the DELETE pico brewing request and cancels the brewing process respectively.
+    :param reader: the read buffer of the current request.
+    :param writer: the write buffer of the current response.
+    """
     await read_complete_request(reader)
     cancel_brewing()
     writer.write('HTTP/1.0 200 OK\r\nContent-Length: 0\r\n\r\n')
 
 
 async def handle_get_pico_on(reader, writer):
-
+    """
+    Handles the GET pico on request.
+    :param reader: the read buffer of the current request.
+    :param writer: the write buffer of the current response.
+    """
     await read_complete_request(reader)
     # set parameters to the PIDController object
     tunings = (config.CURRENT_CONFIG.pid_KP, config.CURRENT_CONFIG.pid_KI, config.CURRENT_CONFIG.pid_KD)
@@ -222,11 +284,21 @@ async def handle_get_pico_on(reader, writer):
 
 
 async def handle_get_pico_health(reader, writer):
+    """
+    Handles the GET pico health request.
+    :param reader: the read buffer of the current request.
+    :param writer: the write buffer of the current response.
+    """
     await read_complete_request(reader)
     writer.write('HTTP/1.0 200 OK\r\nContent-Length: 0\r\n\r\n')
 
 
 async def handle_get_pico_status(reader, writer):
+    """
+    Handles the GET pico status request.
+    :param reader: the read buffer of the current request.
+    :param writer: the write buffer of the current response.
+    """
     await read_complete_request(reader)
     device_1_status = get_device_response('0')
     device_2_status = get_device_response('1')
@@ -239,11 +311,19 @@ async def handle_get_pico_status(reader, writer):
 
 
 async def read_complete_request(reader):
+    """
+    Reads the complete request read buffer.
+    :param reader: the read buffer of the current request.
+    """
     while await reader.readline() != b"\r\n":
         pass
 
 
 def write_toggle_message(new_status):
+    """
+    Writes the toggle message to the pico's terminal.
+    :param new_status: the new status of a device.
+    """
     if print_to_console is True:
         toggled_str = ' turned on!'
         print('new value: ' + str(new_status.value))
@@ -261,6 +341,10 @@ def write_toggle_message(new_status):
 
 
 def brew_coffee(brew_type):
+    """
+    Brews coffee based on the given type and the configured brewing times.
+    :param brew_type: the type of the brewing being either single or double.
+    """
     global brew_duration, brew_start_time
 
     if brew_type == 'single':
@@ -272,6 +356,9 @@ def brew_coffee(brew_type):
 
 
 def cancel_brewing():
+    """
+    Cancels the current brewing process by turning the pump off.
+    """
     global brew_start_time, brew_duration
     brew_start_time = -1
     brew_duration = -1
@@ -283,6 +370,7 @@ def read_raw_temp(sensor_pin):
     Read and return the temperature of one DS18x20 device.
     Pass the 8-byte bytes object with the ROM of the specific device you want to read.
     If only one DS18x20 device is attached to the bus you may omit the rom parameter.
+    :param sensor_pin: the sensors pin.
     """
     dat = Pin(sensor_pin)
     ds = DS18X20(onewire.OneWire(dat))
@@ -297,8 +385,14 @@ def read_raw_temp(sensor_pin):
 
 
 def measure_temp(resolution, sensor_pin, last_temp=0):
-    # in case the sensor is still busy converting temperature
-    # we simply return the last measured temperature as a workaround
+    """
+    Measures the temperature of a temperature sensor connected to the given pin. In case the sensor is still busy
+    converting temperature we simply return the last measured temperature as a workaround
+    :param resolution: the sensor resolution.
+    :param sensor_pin: the sensor pin at the pico.
+    :param last_temp: the last measured temperature.
+    :return:
+    """
     try:
         read_raw_temp(sensor_pin)
         dat = Pin(sensor_pin)
