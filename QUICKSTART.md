@@ -121,8 +121,8 @@ Compiled with warnings.
 
 ## Alternative: Backend serves frontend
 If you only want to run a single service on your machine, the backend is also configured to serve the frontend as well. If you wanna go this way and not have two different javascript applications running (which makes sense for local development, though), do the following:
-* configure backend
-* configure frontend
+* [Configure backend](#configure-backend)
+* [Configure frontend](#configure-frontend)
 * build frontend via ```shell npm run build```
 * start the backend through ```shell npm run start```
 
