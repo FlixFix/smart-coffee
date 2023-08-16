@@ -1,5 +1,5 @@
 (welcome)=
-![logo_coffee_hub.png](..%2Fassets%2Flogo_coffee_hub.png)
+![logo_coffee_hub.png](logo_coffee_hub.png)
 
 # ☕️ What is this about
 This app adds IoT to a Rancilio Silvia espresso machine. However, it can also be used for any other kind of single-circuit coffee machine or be extended for individual requirements. The software is based on three parts:
