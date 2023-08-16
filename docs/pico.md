@@ -1,3 +1,4 @@
+(pico)=
 # 🕹️  Microcontroller code
 ⚠️ Code is not yet properly refactored!
 The used microcontroller is a raspberry pi pico W. However, the code can also be used with any other microcontroller after changing the pico specifc parts.
