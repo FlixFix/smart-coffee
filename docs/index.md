@@ -1,1 +1,2 @@
+(welcome)=
 # Hello ReadTheDocs
