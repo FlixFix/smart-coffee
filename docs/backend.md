@@ -1,3 +1,4 @@
+(backend)=
 # 📀 Backend code
 ## Summary
 The backend is based on a Node.js app, which serves an express http web client. It provides basic functionality for communicating with the pico such as a web socket for sending mqtt log messages to the frontend (For some reason I couldn't get a direct communication between the frontend and the mqtt broker to work, so I used this dirty work around).
