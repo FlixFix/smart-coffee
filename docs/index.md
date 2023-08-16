@@ -8,7 +8,7 @@ This app adds IoT to a Rancilio Silvia espresso machine. However, it can also be
 * The backend application in form of a Node.js application handling communication between the frontend and the microcontroller and doing some configuration and automation handling. 
 * The frontend react app providing an easy user interface for the smart control of the coffee machine.
 
-To get started ASAP look [QUICKSTART.md](QUICKSTART.md) to get a step-by-step guide to get you started quickly and set up the hardware as well as the software.
+To get started ASAP look at {ref}`quickstart` to get a step-by-step guide to get you started quickly and set up the hardware as well as the software.
 
 ## 🍬 Main features
 
@@ -25,10 +25,10 @@ This whole project was inspired by the finally present availability of the pico 
 
 # ☕️ Documentation
 The documentation within the code is not yet properly, since this project is only used for personal use. However, I tried to include very detailed READMEs in order to account for missing code comments. These files for the components can be found under:
-* For the pico: [README.md](pico%2FREADME.md)
-* For the backend: [README.md](backend%2FREADME.md)
-* For the frontend: [README.md](frontend%2FREADME.md)
-* For the evaluation script: [README.md](eval%2FREADME.md)
+* For the pico: {ref}`pico`
+* For the backend: {ref}`backend`
+* For the frontend: {ref}`frontend`
+* For the evaluation script: {ref}`evaluation`
 
 
 # ☕️ The built
