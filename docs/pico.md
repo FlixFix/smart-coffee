@@ -1,10 +1,10 @@
 (pico)=
 # 🕹️  Microcontroller code
 ⚠️ Code is not yet properly refactored!
-The used microcontroller is a raspberry pi pico W. However, the code can also be used with any other microcontroller after changing the pico specifc parts.
+The used microcontroller is a raspberry pi pico W. However, the code can also be used with any other microcontroller after changing the pico specific parts.
 
 ## Getting started
-When initially connecting the flashed pico to the power, it will create an access point, which can be accessed using: **192.168.4.1:88**. The access point also provides the endpoint **/pico/wifi**, which lets you set the wifi credetials for your home network. This can be done using a PUT request like so:
+When initially connecting the flashed pico to the power, it will create an access point, which can be accessed using: **192.168.4.1:88**. The access point also provides the endpoint **/pico/wifi**, which lets you set the wifi credentials for your home network. This can be done using a PUT request like so:
 
 ```shell
 curl -X PUT http://192.168.4.1:88/pico/wifi

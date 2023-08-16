@@ -18,7 +18,7 @@ The setup consists of the following steps:
 ## Setup hardware
 This is the only step, for which I cannot give a proper configuration since it highly depends on your personal setup and coffee machine. However, in the following I have included a diagram showing my setup with the respective hardware used such as links to purchase the components.
 
-![hardware_layout.png](assets%2Fhardware_layout.png)
+![hardware_layout.png](hardware_layout.png)
 
 Considering you have set up the hardware like in the image shown above, make a note of the pins for the all your devices, since you'll need them later to configure your PICO. We will call them like this in the following for easier referencing:
 * **PIN_IO**: the pin to which the I/O of the machine is connected to (GP5 in my setup)

@@ -16,7 +16,7 @@ The following values can be configured in the frontend [.env](.env) file:
 <tr>
 <td style='width: 50%'>
 
-![IMG_5020.PNG](..%2Fassets%2Fscreenshots%2FIMG_5020.PNG)
+![IMG_5020.PNG](.%2Fscreenshots%2FIMG_5020.PNG)
 </td>
 <td>
 The Dashboard component is the entry point of the application as handles brewing coffee, such as turning the machine on and off. It also gives information about the brewing process, the temperature, the state of the heating, and shows an alert in case the water tank needs refilling.
@@ -29,7 +29,7 @@ The Dashboard component is the entry point of the application as handles brewing
 <tr>
 <td style='width: 50%'>
 
-![IMG_5021.PNG](..%2Fassets%2Fscreenshots%2FIMG_5021.PNG)
+![IMG_5021.PNG](.%2Fscreenshots%2FIMG_5021.PNG)
 </td>
 <td>
 The recipe component allows setting the desired brewing temperature, which is then also used for the pid controller such as setting times for the single and double shot brewing once you dialed in your coffee beans for more convenience.
@@ -43,7 +43,7 @@ The recipe component allows setting the desired brewing temperature, which is th
 <tr>
 <td style='width: 50%'>
 
-![IMG_5021.PNG](..%2Fassets%2Fscreenshots%2FIMG_5022.PNG)
+![IMG_5021.PNG](.%2Fscreenshots%2FIMG_5022.PNG)
 </td>
 <td>
 The calendar page allows for setting up a schedule for turning on and off the coffee machine on certain days and on certain times as well as defining a idle time, after which the coffee machine will turn itself off.
@@ -57,7 +57,7 @@ The calendar page allows for setting up a schedule for turning on and off the co
 <tr>
 <td style='width: 50%'>
 
-![temperature_curve.gif](..%2Fassets%2Fanimations%2Ftemperature_curve.gif)
+![temperature_curve.gif](.%2Fanimations%2Ftemperature_curve.gif)
 </td>
 <td>
 The PID component lets you set the various parameters for the PID controller and also shows a relatime graph of the current temperature as well as showing the state of the heating.
@@ -71,7 +71,7 @@ The PID component lets you set the various parameters for the PID controller and
 <tr>
 <td style='width: 50%'>
 
-![IMG_5021.PNG](..%2Fassets%2Fscreenshots%2FIMG_5023.PNG)
+![IMG_5021.PNG](.%2Fscreenshots%2FIMG_5023.PNG)
 </td>
 <td>
 The pico config page lets you configure the different logging levels for the pico as well as setting up a MQTT topic such as a MQTT broker IP.
@@ -85,7 +85,7 @@ The pico config page lets you configure the different logging levels for the pic
 <tr>
 <td style='width: 50%'>
 
-![IMG_5021.PNG](..%2Fassets%2Fscreenshots%2FIMG_5023.PNG)
+![IMG_5021.PNG](.%2Fscreenshots%2FIMG_5023.PNG)
 </td>
 <td>
 This page shows information about the current version of the software such as the author.

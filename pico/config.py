@@ -41,7 +41,7 @@ temp_sensor_resolution = 10
 relais_io = Pin(pin_io, Pin.OUT, value=0)  # i/o
 relais_pump = Pin(pin_pump, Pin.OUT, value=0)  # pump
 relais_heat = Pin(pin_heat, Pin.OUT, value=0)  # heat
-tank_toggle = Pin(pin_tank, Pin.IN)  # tank pin
+tank_toggle = Pin(pin_tank, Pin.IN, Pin.PULL_UP)  # tank pin
 
 wlan = network.WLAN(network.STA_IF)
 rtc = RTC()
