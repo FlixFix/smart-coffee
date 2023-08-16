@@ -1,0 +1,5 @@
+sphinx ~= 6.0
+furo
+# `docs.pipext` uses pip's internals to generate documentation. So, we install
+# the current directory to make it work.
+.
