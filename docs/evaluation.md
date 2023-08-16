@@ -1,3 +1,4 @@
+(evaluation)=
 # 🧐 PID control analysis
 This little script reads the logs saved by the backend, which are based on the messages sent to the MQTT broker and generates a graph for every control cycle of the pico.
 
