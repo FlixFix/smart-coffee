@@ -40,7 +40,6 @@ pygments_dark_style = 'nord'
 
 html_theme = 'furo'
 html_static_path = ['_static']
-html_title = f'{project} {release}'
 
 
 # -- Extension configuration -------------------------------------------------
