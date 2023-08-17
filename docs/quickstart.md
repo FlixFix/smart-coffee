@@ -29,7 +29,7 @@ Considering you have set up the hardware like in the image shown above, make a n
 * **PIN_SENSOR_REF**: the pin to which the reference temperature sensor attached to the bottom of the machine is connected to (GP21 in my setup)
 
 ## Setup PICO
-In a first step you will have to configure your pin layout inside the _pico/config.py_ intended for configuring the pico base values. Configuring the pin layout according to your pin layout will suffice to run the rest of the software (if you stuck to my example, you won't have to configure anything for the software and hardware to run properly). However, if you are interested in fine-tuning your pico configuration, see [README.md](pico%2FREADME.md#configuration) for more detail.
+In a first step you will have to configure your pin layout inside the _pico/config.py_ intended for configuring the pico base values. Configuring the pin layout according to your pin layout will suffice to run the rest of the software (if you stuck to my example, you won't have to configure anything for the software and hardware to run properly). However, if you are interested in fine-tuning your pico configuration, see _README.md_ for more detail.
 
 When you're done with your configuration, copy the content of the _pico_ folder to your pico using i.e. [Thonny](https://thonny.org/). 
 
@@ -134,5 +134,5 @@ The UI of the application can now be accessed on any browser under (the ip addre
 ```
     http://localhost:3000/
 ```
-If you can see the [dashboard page](frontend%2FREADME.md#dashboard), everything worked and the connection to the pico is successful.
+If you can see the Dashboard page, everything worked and the connection to the pico is successful.
 

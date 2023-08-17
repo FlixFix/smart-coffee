@@ -22,7 +22,7 @@ npm run build
 <tr>
 <td style='width: 50%; padding: 20px'>
 
-![IMG_5020.PNG](IMG_5020.PNG)
+![IMG_5020.PNG](IMG_5020.png)
 </td>
 <td>
 The Dashboard component is the entry point of the application as handles brewing coffee, such as turning the machine on and off. It also gives information about the brewing process, the temperature, the state of the heating, and shows an alert in case the water tank needs refilling.

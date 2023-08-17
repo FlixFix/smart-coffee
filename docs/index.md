@@ -73,7 +73,7 @@ Version 3, 29 June 2007. See {ref}`license` to read the complete license text.
 
 ```{toctree}
 ---
-maxdepth: 2
+maxdepth: 3
 hidden:
 caption: Contents
 ---
@@ -83,7 +83,6 @@ quickstart
 pico
 backend
 frontend
-license
 ```
 
 ```{toctree}
@@ -92,6 +91,9 @@ hidden:
 caption: Project links
 ---
 GitHub <https://github.com/flixfix/smart-coffee>
+```
+
+```{toctree}
 ---
 hidden:
 caption: Credits
@@ -99,4 +101,12 @@ caption: Credits
 CleverCoffee <https://clevercoffee.de/>
 SimplePid <https://simple-pid.readthedocs.io/en/latest/index.html>
 ---
+```
+
+```{toctree}
+---
+hidden:
+caption: License
+---
+license
 ```

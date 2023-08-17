@@ -1,5 +1,5 @@
 (pico)=
-# 🕹️  Microcontroller code
+# Microcontroller code
 ⚠️ Code is not yet properly refactored!
 The used microcontroller is a raspberry pi pico W. However, the code can also be used with any other microcontroller after changing the pico specific parts.
 
@@ -51,7 +51,7 @@ The main configuration variables for an initial setup are already set to proper 
  * **PICO_HOSTNAME**: The hostname under which the pico will show up in the local network
  * **mqtt_broker_ip**: The IP address of the mqtt broker, if you want to use this feature
  * **mqtt_broker_topic**: The topic for the messages delivered to the mqtt broker
- * **temp_sensor_resolution**: The resolution for the temperature sensors. The values can be 9, 10, 11, 12. The **main_loop_delay** has to be set accordingly. See the following table and [then sensor datasheet](https://www.analog.com/media/en/technical-documentation/data-sheets/ds18b20.pdf) for more detail.
+ * **temp_sensor_resolution**: The resolution for the temperature sensors. The values can be 9, 10, 11, 12. The **main_loop_delay** has to be set accordingly. See the following table and [the sensor datasheet](https://www.analog.com/media/en/technical-documentation/data-sheets/ds18b20.pdf) for more detail.
  
 | resolution  | conversion time (=**main_loop_delay**) |
 |-------------|----------------------------------------|
