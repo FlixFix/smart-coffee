@@ -67,6 +67,15 @@ rsync -arv --exclude './backend/.env' ./backend homepod@192.168.178.146:/var/www
 #echo 'copying frontend static to homepod...'
 rsync -arv ./frontend/build homepod@192.168.178.146:/var/www/coffee-hub/frontend &&
 
+echo 'Creating tag and pushing to origin'
+TAG_NAME="release_$major_version.$minor_version.$hotfix_version"
+
+# Create a new tag and commit it
+git tag "$TAG_NAME" &&
+git commit -am "Released version $major_version.$minor_version.$hotfix_version" &&
+git push origin "$TAG_NAME"
+
+
 echo 'starting application...'
 op read op://Private/Homepod/password | ssh -t Homepod "sudo -S systemctl restart coffee-hub.service"
 
