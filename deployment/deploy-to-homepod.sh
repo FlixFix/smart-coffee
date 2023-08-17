@@ -56,7 +56,7 @@ sed -i '' "3s/.*/REACT_APP_APP_HOTFIX_VERSION=$hotfix_version/" $fronend_env &&
 sed -i '' "4s/.*/REACT_APP_APP_BUILD_TIME=$deploy_time/" $fronend_env &&
 
 echo "Successfully wrote new version and build time to file!"
-#echo 'building frontend ...'
+echo 'building frontend ...'
 cd ./frontend && npm run build &&
 echo 'building frontend done!'
 
@@ -64,7 +64,7 @@ echo 'copying backend to homepod...'
 cd .. &&
 rsync -arv --exclude './backend/.env' ./backend homepod@192.168.178.146:/var/www/coffee-hub/ &&
 
-#echo 'copying frontend static to homepod...'
+echo 'copying frontend static to homepod...'
 rsync -arv ./frontend/build homepod@192.168.178.146:/var/www/coffee-hub/frontend &&
 
 echo 'Creating tag and pushing to origin'
