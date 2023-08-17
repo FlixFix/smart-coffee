@@ -11,7 +11,6 @@ This app adds IoT to a Rancilio Silvia espresso machine. However, it can also be
 To get started ASAP look at {ref}`quickstart` to get a step-by-step guide to get you started quickly and set up the hardware as well as the software.
 
 ## 🍬 Main features
-
 The main features of this setup are:
 * timed switching on and off of the Rancilio Silvia also based on a configurable schedule.
 * auto switch-off of the Rancilio Silvia after a given idle-time.
@@ -25,6 +24,8 @@ This whole project was inspired by the finally present availability of the pico 
 
 # ☕️ Documentation
 The documentation within the code is not yet properly, since this project is only used for personal use. However, I tried to include very detailed READMEs in order to account for missing code comments. These files for the components can be found under:
+* General project structure: {ref}`structure`
+* Quickstart: {ref}`quickstart`
 * For the pico: {ref}`pico`
 * For the backend: {ref}`backend`
 * For the frontend: {ref}`frontend`
@@ -42,14 +43,14 @@ The microcontroller resides inside the Rancilio Silvia and has the following dev
 The backend and frontend, such as an MQTT broker are hosted on a local network server.
 
 # ☕️ Deploying new versions
-To easily deploy new versions of the backend and frontend the [deployment folder](deployment) contains a respective script. By running the script with the respective -hotfix, -minor, or -major options, the respective part of the version is updated based on the current version. The current version is stored in the [.env](../frontend%2F.env) of the frontend split in the parts:
+To easily deploy new versions of the backend and frontend the _deployment_ folder contains a respective script. By running the script with the respective -hotfix, -minor, or -major options, the respective part of the version is updated based on the current version. The current version is stored in the _frontend/.env_ of the frontend split in the parts:
 * **REACT_APP_APP_MAJOR_VERSION**
 * **REACT_APP_APP_MINOR_VERSION**
 * **REACT_APP_APP_HOTFIX_VERSION**
 
 In order to use the deployment script on another machine, the ssh configuration of the script has to be adjusted according to your setup. Also, note that I am running this application as a linux service on my server, so that the script also restarts the service after a new version is deployed (One-Click Deployment 🤩). The script can be used like so:
 
-```shell
+```sh
 /bin/bash ./deploy-to-homepod.sh major
 ```
 I created respective IntelliJ configurations to run the command with either major, minor, or hotfix based on the configuration, which makes deployments even easier.
@@ -67,7 +68,7 @@ I am happy for any contributions and critics!
 
 # ☕️ License
 All the files and source code included in this repository, is distributed under the GNU GENERAL PUBLIC LICENSE
-Version 3, 29 June 2007. See [COPYING](../COPYING) to read the complete license text.
+Version 3, 29 June 2007. See {ref}`license` to read the complete license text.
 
 
 ```{toctree}
@@ -77,10 +78,12 @@ hidden:
 caption: Contents
 ---
 self
+structure
 quickstart
+pico
 backend
 frontend
-pico
+license
 ```
 
 ```{toctree}
@@ -89,4 +92,11 @@ hidden:
 caption: Project links
 ---
 GitHub <https://github.com/flixfix/smart-coffee>
+---
+hidden:
+caption: Credits
+---
+CleverCoffee <https://clevercoffee.de/>
+SimplePid <https://simple-pid.readthedocs.io/en/latest/index.html>
+---
 ```

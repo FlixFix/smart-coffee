@@ -1,20 +1,26 @@
 (frontend)=
-# 🖥️ Frontend code
+# Frontend code
 The frontend is a basic react app optimised and only properly working on a smartphone since it relies on swipe gestures. However, for local testing or development, switching the device mode to tablet or smartphone in the browser also works.
 Navigation is handled through a slide-out side-panel, which can simply be slid out using a sliding gesture to the right side of the screen.
 
 ## Configuration
-The following values can be configured in the frontend [.env](.env) file:
+The following values can be configured in the frontend _frontend/.env_ file:
 * **REACT_APP_BACKEND_IP**: defines the IP address of the backend. This should be localhost, if the backend and the frontend run on the same machine.
 * **REACT_APP_READY_DERIVATION**: Maximum derivation of the temperature from the desired temperature for a ready status to show on the dashboard. (Defaults to 3°C)
 * **REACT_APP_OPTIMAL_DERIVATION**: Maximum derivation of the temperature from the desired temperature for a optimal status to show on the dashboard. (Defaults to 0.5°C)
+
+## Build
+To build the frontend application, which can then be served from the backend run the following command within the _frontend_ module:
+```shell
+npm run build
+```
 
 ## App structure
 
 ### Dashboard
 <table>
 <tr>
-<td style='width: 50%'>
+<td style='width: 50%; padding: 20px'>
 
 ![IMG_5020.PNG](IMG_5020.PNG)
 </td>
@@ -27,7 +33,7 @@ The Dashboard component is the entry point of the application as handles brewing
 ### Zubereitung (Recipe)
 <table>
 <tr>
-<td style='width: 50%'>
+<td style='width: 50%; padding: 20px'>
 
 ![IMG_5021.PNG](IMG_5021.PNG)
 </td>
@@ -41,7 +47,7 @@ The recipe component allows setting the desired brewing temperature, which is th
 ### Zeitsteuerung (Calendar)
 <table>
 <tr>
-<td style='width: 50%'>
+<td style='width: 50%; padding: 20px'>
 
 ![IMG_5021.PNG](IMG_5022.PNG)
 </td>
@@ -55,7 +61,7 @@ The calendar page allows for setting up a schedule for turning on and off the co
 ### PID
 <table>
 <tr>
-<td style='width: 50%'>
+<td style='width: 50%; padding: 20px'>
 
 ![temperature_curve.gif](temperature_curve.gif)
 </td>
@@ -69,7 +75,7 @@ The PID component lets you set the various parameters for the PID controller and
 ### Pico Config
 <table>
 <tr>
-<td style='width: 50%'>
+<td style='width: 50%; padding: 20px'>
 
 ![IMG_5021.PNG](IMG_5023.PNG)
 </td>
@@ -83,7 +89,7 @@ The pico config page lets you configure the different logging levels for the pic
 ### About
 <table>
 <tr>
-<td style='width: 50%'>
+<td style='width: 50%; padding: 20px'>
 
 ![IMG_5021.PNG](IMG_5023.PNG)
 </td>
