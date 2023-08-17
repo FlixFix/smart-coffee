@@ -71,8 +71,8 @@ echo 'Creating tag and pushing to origin'
 TAG_NAME="release_$major_version.$minor_version.$hotfix_version"
 
 # Create a new tag and commit it
-git tag "$TAG_NAME" &&
 git commit -am "Released version $major_version.$minor_version.$hotfix_version" &&
+git tag "$TAG_NAME" &&
 git push origin "$TAG_NAME"
 
 
