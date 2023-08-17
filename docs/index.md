@@ -83,6 +83,7 @@ quickstart
 pico
 backend
 frontend
+evaluation
 ```
 
 ```{toctree}
