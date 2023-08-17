@@ -120,7 +120,7 @@ export function DashboardComponent(props: DashboardComponentProps): ReactElement
 
     return (<>
         <div className='position-absolute bottom-0 pb-2 end-0 me-2'>
-            <EmptyTankComponent tankEmpty={props.tankStatus !== undefined && props.tankStatus.value !== 1}/>
+            <EmptyTankComponent tankEmpty={props.tankStatus !== undefined && props.tankStatus.value !== 0}/>
         </div>
         <LogoHeader height='35px' text='Dashboard'/>
         <div className='ps-2 d-flex flex-column align-items-center gap-3 position-relative'>
