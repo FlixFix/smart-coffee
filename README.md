@@ -1,5 +1,8 @@
 ![logo_coffee_hub.png](assets%2Flogo_coffee_hub.png)
 
+[![Read the Docs](https://img.shields.io/readthedocs/simple-pid.svg)]([https://simple-pid.readthedocs.io/](https://coffeehub.readthedocs.io/en/latest/index.html))
+[![License](https://img.shields.io/github/license/m-lundberg/simple-pid.svg)](https://github.com/m-lundberg/simple-pid/blob/master/LICENSE.md)
+
 # ☕️ What is this about
 This app adds IoT to a Rancilio Silvia espresso machine. However, it can also be used for any other kind of single-circuit coffee machine or be extended for individual requirements. The software is based on three parts:
 
