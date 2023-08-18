@@ -1,7 +1,9 @@
 ![logo_coffee_hub.png](assets%2Flogo_coffee_hub.png)
 
-[![Read the Docs](https://img.shields.io/readthedocs/simple-pid.svg)]([https://simple-pid.readthedocs.io/](https://coffeehub.readthedocs.io/en/latest/index.html))
-[![License](https://img.shields.io/github/license/m-lundberg/simple-pid.svg)](https://github.com/m-lundberg/simple-pid/blob/master/LICENSE.md)
+[![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/FlixFix/smart-coffee/activity)
+[![Read the Docs](https://img.shields.io/readthedocs/coffeehub)](https://coffeehub.readthedocs.io/)
+[![Latest Release](https://img.shields.io/github/v/tag/FlixFix/smart-coffee?sort=semver)](https://github.com/FlixFix/smart-coffee/releases)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](COPYING)
 
 # ☕️ What is this about
 This app adds IoT to a Rancilio Silvia espresso machine. However, it can also be used for any other kind of single-circuit coffee machine or be extended for individual requirements. The software is based on three parts:
@@ -66,3 +68,7 @@ This is my first time working with microcontrollers and also Node.js, therefore 
 * Remove the web socket between frontend and backend and let the frontend directly communicate with the MQTT broker
 
 I am happy for any contributions and critics!
+
+# ☕️ License
+All the files and source code included in this repository, is distributed under the GNU GENERAL PUBLIC LICENSE
+Version 3, 29 June 2007. See the [license file](COPYING) to read the complete license text.
