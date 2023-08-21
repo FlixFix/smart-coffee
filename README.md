@@ -19,7 +19,10 @@ To get started ASAP look [QUICKSTART.md](QUICKSTART.md) to get a step-by-step gu
 The main features of this setup are:
 * timed switching on and off of the Rancilio Silvia also based on a configurable schedule.
 * auto switch-off of the Rancilio Silvia after a given idle-time.
-* fully configurable PID controller for controlling and keeping a consistent brewing temperature of the Rancilio Silvia.
+* fully configurable PID controller for controlling and keeping a consistent brewing temperature of the Rancilio Silvia including cold start detection.
+<div style='padding-left: 30px'>
+<img src='./eval/example.png'/>
+</div>
 * configuration and setup of two different brewing times (single and double shot), such as a cleaning function for cleaning the brew group after brewing.
 * various monitoring settings and functions for temperature and microcontroller events.
 * connection to an MQTT broker for logging the microcontroller events.

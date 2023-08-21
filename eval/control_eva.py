@@ -2,8 +2,10 @@ import re
 from datetime import datetime
 
 import matplotlib.pyplot as plt
-from scipy.interpolate import make_interp_spline
 import numpy as np
+from scipy.interpolate import make_interp_spline
+
+plt.style.use('seaborn-v0_8-whitegrid')
 
 groups = []
 plot_heating = False
@@ -11,7 +13,7 @@ smoothen = False
 
 
 def main():
-    read_logs('../backend/log/pico.log', groups)
+    read_logs('../pico-prod.log', groups)
     filtered_groups = [group for group in groups if group.lines]
     plot_results([filtered_groups[-1]])
 
@@ -26,6 +28,9 @@ def plot_results(groups):
 
     fig, axes = plt.subplots(num_rows, num_cols, figsize=(20, 10))
     fig.tight_layout(pad=3.0)
+
+    # set styles
+    axes.set_facecolor('#3e4247')
 
     for i, group in enumerate(groups):
         # Compute time differences from the starting time
@@ -102,7 +107,7 @@ def plot_results(groups):
                 prev_time_diff = time_diffs[j]
 
         # Add the legend to the subplot with padding
-        ax.legend(loc="upper right", borderaxespad=0.5)
+        ax.legend(loc="lower right", borderaxespad=0.5, labelcolor='linecolor')
 
         # Add padding inside the subplot
         ax.margins(x=0.05, y=0.8)

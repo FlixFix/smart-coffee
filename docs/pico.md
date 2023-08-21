@@ -60,6 +60,8 @@ The main configuration variables for an initial setup are already set to proper 
 | 11          | 375ms                                  |
 | 12          | 750ms                                  |
 * The default values for P, I, and D components such as the brewing temperature can also be configured.
+* **cold_start_threshold**: Temperature threshold for detecting a cold start of the machine (if temp_tank-temp_ref < threshold -> coldstart)
+* **cold_start_temp_diff**: In case of a detected coldstart the PID values will be reset, when the tank temperature reaches a temperature difference of this value from the brewing temperature temperature
 
 ### pin configuration
 * **pin_io**: The pin number of the pin used to turn on and off the machine
@@ -69,6 +71,9 @@ The main configuration variables for an initial setup are already set to proper 
 * **pin_sensor_tank**: The pin number of the pin used for the tank temperature sensor
 * **pin_sensor_ref**: The pin number of the pin used for the reference temperature sensor
 
+### PID control
+The PID control works based on the configurable P, I, and D values. Besides, a crude cold-start detection is implemented based on **cold_start_threshold** and **cold_start_temp_diff**.
+These values can only be configured by flashing the PICO software. When the tank temperature has a difference >= **cold_start_threshold**, a cold start is detected by the software. In this case the machine will keep heating up until the tank temperature is within a range of **cold_start_temp_diff** from the anticipated brewing temperature and then reset the pid. This results in a pretty smooth temperature curve and very short heating times of the machine up to reaching the anticipated brewing temperature.
 
 ## Logging
 The logging can take place at two different stages depending on your needs

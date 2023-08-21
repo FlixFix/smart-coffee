@@ -360,8 +360,10 @@ def cancel_brewing():
     Cancels the current brewing process by turning the pump off.
     """
     global brew_start_time, brew_duration
+    duration = utime.ticks_diff(utime.ticks_ms(), brew_start_time) / 1000
     brew_start_time = -1
     brew_duration = -1
+    logger.info('Finished brewing after ' + str(duration) + ' seconds.')
     Pin(config.pin_pump, Pin.OUT, value=0)
 
 

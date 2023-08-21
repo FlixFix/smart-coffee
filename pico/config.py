@@ -55,6 +55,8 @@ brewTemp = 90
 pid_controller = PID(kP, kI, kD, setpoint=brewTemp, scale='ms')
 pid_controller.proportional_on_measurement = pid_pom
 
+cold_start_threshold = 20  # if temp_tank-temp_ref < threshold -> coldstart
+cold_start_temp_diff = 15  # if temp_soll - temp_tank < diff -> reset PID for coldstart
 
 # ---------------------------------------------------
 
