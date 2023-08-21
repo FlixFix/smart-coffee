@@ -7,7 +7,7 @@ const {
     getPicoStatus, setDeviceStatus, getTemperature, turnMachineOn,
     getReferenceTemperature, updateConfig, cancelBrewing, getPicoHealth, picoBrewCoffee
 } = require("../service/pico-service");
-const {brewCoffee, setOnTime, getOnTime} = require("../service/coffee-service");
+const {setOnTime, getOnTime} = require("../service/coffee-service");
 const {resolve} = require("path");
 const {DateTime} = require("luxon");
 const {json} = require("express");
@@ -28,6 +28,15 @@ app.use(express.json());
 
 // use frontend components to be served directly from the backend
 app.use(express.static(resolve(__dirname, '../../frontend/build')));
+
+/**
+ * Returns the current stats of the application - these stats will not be overridden on a new deployment.
+ */
+app.get("/coffee-hub/api/v1/stats", (req, res) => {
+    const stats = readStats();
+    res.json(stats);
+    res.status(200);
+});
 
 /**
  * Returns the pico status containing the status of all the devices attached to the pico and the current pico system time.
@@ -78,6 +87,7 @@ app.get("/coffee-hub/api/v1/reference-temperature", (req, res) => {
 app.get("/coffee-hub/api/v1/brew", (req, res) => {
     const type = req.query.type;
     picoBrewCoffee(type).then(() => {
+        statsAddCoffee();
         res.status(201);
         res.json();
     }).catch(() => {
@@ -114,6 +124,12 @@ app.put("/coffee-hub/api/v1/devices", (req, res) => {
             res.status(200);
             res.json(data);
         })
+    } else if (req.body.device_number === '1' && req.body.value === 1) {
+        setDeviceStatus(req.body).then((data) => {
+            statsAddCoffee();
+            res.status(200);
+            res.json(data);
+        });
     } else {
         setDeviceStatus(req.body).then((data) => {
             res.status(200);
@@ -187,6 +203,7 @@ app.get('*', (req, res) => {
 
 // this code opens a websocket to broadcast MQTT messages received from the broker to the frontend
 const WebSocket = require('ws');
+const {statsAddCoffee, readStats} = require("../util/stats-util");
 
 const wss = new WebSocket.Server({port: 7071});
 

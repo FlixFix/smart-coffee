@@ -1,6 +1,10 @@
-const {appendFile, readFile, writeFile, existsSync} = require("fs");
+const {appendFile, readFile, writeFile, existsSync, writeFileSync, readFileSync} = require("fs");
 const {DateTime} = require("luxon");
 
+/**
+ * Writes a PICO log message to the log file.
+ * @param logMessage the log message to be logged.
+ */
 function logPicoMessage(logMessage) {
     let logEntry = `PICO [${DateTime.now()}]: ${logMessage}`
     logEntry = logEntry.replace('\n', '');
@@ -15,5 +19,6 @@ function logPicoMessage(logMessage) {
         });
     }
 }
+
 
 exports.logPicoMessage = logPicoMessage;
