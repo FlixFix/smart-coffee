@@ -2,6 +2,14 @@
 # Quickstart
 ## Shopping list
 In order to exactly follow along this tutorial, you will have to buy the following:
+* raspberry pico w
+* jumper wires
+* solid state relais (for the heating): https://www.amazon.de/dp/B08FWV56SP?psc=1&ref=ppx_yo2ov_dt_b_product_details
+* water tank reed sensor: https://de.aliexpress.com/item/1005004679552782.html?gatewayAdapt=glo2deu
+* DS18B20 temperature sensor: https://de.aliexpress.com/item/33040146828.html?gatewayAdapt=glo2deu
+* relais module: https://de.aliexpress.com/item/1005003773145779.html?gatewayAdapt=glo2deu
+* heat transferring glue: https://www.amazon.de/dp/B014I7SFN4?psc=1&ref=ppx_yo2ov_dt_b_product_details
+* optional: If you want to power your pico w with your machine a voltage converter from 230V to 5V. I just used an old phone charger.
 
 ## Overview
 The setup consists of the following steps:
