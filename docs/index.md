@@ -38,9 +38,7 @@ The microcontroller resides inside the Rancilio Silvia and has the following dev
 * a relais, which handles turning on and off the machine
 * a relais, which handles turning on and off the heating of the machine
 * a temperature sensor measuring the temperature at the boiler (this replaces the original temperature sensor, which is used for controlling the brewing temperature inside the Rancilio Silvia)
-<div style='padding-left: 30px'>
-<img src='./example.png'/>
-</div>
+![example.png](example.png)
 * another temperature sensor, which acts as a reference temperature sensor to account for a cold start of the machine and therefore different PID values in contrast to an already running machine
 
 The backend and frontend, such as an MQTT broker are hosted on a local network server.
