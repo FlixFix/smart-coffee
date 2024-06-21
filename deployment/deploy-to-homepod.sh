@@ -62,10 +62,10 @@ echo 'building frontend done!'
 
 echo 'copying backend to homepod...'
 cd .. &&
-rsync -arv --exclude './backend/.env' ./backend homepod@192.168.178.146:/var/www/coffee-hub/ &&
+rsync -arv --exclude './backend/.env' ./backend homepod@192.168.178.86:/var/www/coffee-hub/ &&
 
 echo 'copying frontend static to homepod...'
-rsync -arv ./frontend/build homepod@192.168.178.146:/var/www/coffee-hub/frontend &&
+rsync -arv ./frontend/build homepod@192.168.178.86:/var/www/coffee-hub/frontend &&
 
 echo 'Creating tag and pushing to origin'
 TAG_NAME="release_$major_version.$minor_version.$hotfix_version"

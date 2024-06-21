@@ -20,7 +20,7 @@ PICO_HOSTNAME = "Rancilio-Silvia"
 # ---------------------------------------------------
 
 # the ip used for the mqtt connection ---------------
-mqtt_broker_ip = '192.168.178.146'
+mqtt_broker_ip = '192.168.178.86'
 mqtt_broker_topic = b"pico_log"
 # ---------------------------------------------------
 
