@@ -24,6 +24,8 @@ async def main():
     access_point_running = False
     access_point_task = None
 
+    asyncio.create_task(wifi.check_wifi_connection())
+
     while True:
         if wifi.connected_to_wifi and webserver_running is False:
             if access_point_task is not None:
@@ -32,10 +34,17 @@ async def main():
             logger.info('Webserver setup successfully!')
             logger.info('PID control inactive')
             webserver_running = True
-        elif wifi.connected_to_wifi is False and access_point_running is False:
-            access_point_task = asyncio.create_task(asyncio.start_server(access_point.serve_client, "0.0.0.0", 88))
-            logger.info('Access point setup successfully!')
-            access_point_running = True
+        elif not wifi.connected_to_wifi:
+            if not access_point_running:
+                access_point_task = asyncio.create_task(asyncio.start_server(access_point.serve_client, "0.0.0.0", 88))
+                logger.info('Access point setup successfully!')
+                access_point_running = True
+                # Attempt to reconnect to Wi-Fi
+            if wifi.connect_to_network():
+                if access_point_task is not None:
+                    access_point_task.cancel()
+                webserver_running = False
+                access_point_running = False
 
         await smart_coffee_loop()
         await asyncio.sleep(config.main_loop_delay)
