@@ -26,9 +26,6 @@ const PORT = process.env.PORT || 3001;
 const app = express();
 app.use(express.json());
 
-// use frontend components to be served directly from the backend
-app.use(express.static(resolve(__dirname, '../../frontend/build')));
-
 /**
  * Returns the current stats of the application - these stats will not be overridden on a new deployment.
  */
@@ -188,18 +185,20 @@ app.delete("/coffee-hub/api/v1/config", (req, res) => {
     }
 });
 
-/**
- * Start the webserver on the configured port.
- */
-app.listen(PORT, () => {
-    console.log(`Server listening on ${PORT}`);
-});
+// use frontend components to be served directly from the backend
+app.use(express.static(resolve(__dirname, '../../frontend/build')));
 
 // All other GET requests not handled before will return our React app
 app.get('*', (req, res) => {
     res.sendFile(resolve(__dirname, '../../frontend/build', 'index.html'));
 });
 
+/**
+ * Start the webserver on the configured port.
+ */
+app.listen(PORT, () => {
+    console.log(`Server listening on ${PORT}`);
+});
 
 // this code opens a websocket to broadcast MQTT messages received from the broker to the frontend
 const WebSocket = require('ws');
