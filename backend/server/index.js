@@ -196,7 +196,7 @@ app.get('*', (req, res) => {
 /**
  * Start the webserver on the configured port.
  */
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
     console.log(`Server listening on ${PORT}`);
 });
 
