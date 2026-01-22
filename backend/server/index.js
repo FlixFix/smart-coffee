@@ -53,6 +53,12 @@ app.get("/coffee-hub/api/v1/on-status", (req, res) => {
     res.json(getOnTime() !== null ? getOnTime() : json());
 });
 
+app.get("/coffee-hub/api/v1/active", (req, res) => {
+    const onTime = getOnTime();
+    // If onTime exists, return 1, otherwise return 0
+    res.status(200).json({ "active": onTime !== null ? 1 : 0 });
+});
+
 /**
  * Returns a temperature-dto containing the temperature of the temperature sensor attached to the boiler.
  */
