@@ -1,9 +1,11 @@
 import httpUtils
 from devices import DeviceStatus, PicoStatus, Temperature
 from machine import Pin
+import machine
 import onewire
 from ds18x20 import DS18X20
 
+import uasyncio as asyncio
 import utime
 import json
 import config
@@ -25,6 +27,7 @@ PICO_LOGGING_PATH = '/pico/logging'
 PICO_BREW_PATH = '/pico/brew'
 PICO_TEMPERATURE_PATH = '/pico/temperature'
 PICO_REF_TEMPERATURE_PATH = '/pico/ref-temperature'
+PICO_RESET_PATH = '/pico/reset'
 DEVICES_STATUS_PATH = '/devices/status'
 
 
@@ -110,6 +113,9 @@ async def serve_client(reader, writer):
 
     elif request_method == 'GET' and PICO_CONFIG_PATH in request_path:
         await handle_get_pico_config(reader, writer)
+
+    elif request_method == 'POST' and request_path == PICO_RESET_PATH:
+        await handle_post_pico_reset(reader, writer)
 
     else:
         await read_complete_request(reader)
@@ -281,6 +287,22 @@ async def handle_get_pico_on(reader, writer):
     write_toggle_message(status)
     writer.write('HTTP/1.0 200 OK\r\nContent-type: application/json\r\n\r\n')
     writer.write(httpUtils.write_response(status))
+
+
+async def handle_post_pico_reset(reader, writer):
+    """
+    Handles the POST pico reset request and hard-resets the Pico after the response is flushed.
+    Used by the WebREPL OTA deploy flow.
+    """
+    await read_complete_request(reader)
+    writer.write('HTTP/1.0 200 OK\r\nContent-Length: 0\r\n\r\n')
+    asyncio.create_task(_reset_after_delay())
+
+
+async def _reset_after_delay():
+    # Give serve_client time to drain and close the response socket before the reset wipes it.
+    await asyncio.sleep(1)
+    machine.reset()
 
 
 async def handle_get_pico_health(reader, writer):

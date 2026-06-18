@@ -3,3 +3,4 @@
 /backend/log/
 /eval/results/
 /pico-prod.log
+/pico/webrepl_cfg.py

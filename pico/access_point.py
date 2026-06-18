@@ -52,7 +52,7 @@ async def handle_put_pico_wifi(reader, writer):
     config_helper.write_config(CURRENT_CONFIG)
 
     # try to reconnect to the network
-    wifi.connect_to_network()
+    await wifi.connect_to_network()
 
     writer.write('HTTP/1.0 200 OK\r\nContent-type: application/json\r\n\r\n')
     writer.write(httpUtils.write_response(CURRENT_CONFIG))
