@@ -1,7 +1,6 @@
 import config
 import logger
 from machine import Pin
-import time
 import network
 import uasyncio as asyncio
 
@@ -24,7 +23,7 @@ async def check_wifi_connection():
         await asyncio.sleep(5)  # Check every 5 seconds
 
 
-def connect_to_network():
+async def connect_to_network():
     """
     Tries to connect the pico to the configured wifi network with retries. If successful, the pico's LED will stop flashing.
     """
@@ -45,7 +44,7 @@ def connect_to_network():
 
             logger.info('waiting for connection...')
             Pin("LED", Pin.OUT).toggle()
-            time.sleep(1)
+            await asyncio.sleep(1)
 
         if config.wlan.status() == 3:
             logger.info('Successfully connected to WIFI!')
@@ -57,7 +56,7 @@ def connect_to_network():
         else:
             logger.info(f'Failed to connect to WIFI. Retrying in {RETRY_DELAY} seconds...')
             retries += 1
-            time.sleep(RETRY_DELAY)
+            await asyncio.sleep(RETRY_DELAY)
 
     logger.info('Failed to connect to WIFI after several attempts. Running access point.')
     run_server()
