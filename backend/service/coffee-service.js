@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-const {setDeviceStatus, getDeviceStatus, picoBrewCoffee} = require("./pico-service");
+const {setDeviceStatus, getDeviceStatus, turnMachineOn} = require("./pico-service");
 const {readConfig} = require("../util/config-util");
 const {DateTime} = require("luxon");
 
@@ -19,6 +19,26 @@ function setOnTime(time) {
  */
 function getOnTime() {
     return deviceOnTime;
+}
+
+/**
+ * Turns the coffee machine on or off and keeps the on-timer in sync. Turning the machine on goes through the pico's
+ * /pico/on endpoint, which also (re)starts the PID controller with the configured tunings. Every caller that switches
+ * the machine - the REST API, the scheduler and the Home Assistant bridge - has to go through here, otherwise the
+ * on-timer is never started and the idle auto-off below can't turn the machine off again.
+ * @param value 1 to turn the machine on, 0 to turn it off.
+ * @returns {Promise<*>} the resulting device status as a device-status-dto.
+ */
+async function setMachinePower(value) {
+    if (value === 1) {
+        const data = await turnMachineOn();
+        setOnTime(data !== undefined && data.value === 1 ? DateTime.now() : null);
+        return data;
+    }
+
+    const data = await setDeviceStatus({device_number: "0", value: 0});
+    setOnTime(null);
+    return data;
 }
 
 /**
@@ -43,10 +63,7 @@ async function scheduler() {
 
         if (onMinutes >= configOnTimeInMinutes) {
             console.log(`Turning machine off after ${configOnTimeInMinutes} minutes due to idle...`);
-            await setDeviceStatus({
-                value: 0,
-                device_number: "0"
-            }).then(() => setOnTime(null));
+            await setMachinePower(0);
         } else {
             console.log(`Machine is running since ${onMinutes.toFixed(2)} minutes`)
         }
@@ -74,13 +91,11 @@ async function scheduleMachine() {
             return;
         }
 
-        setDeviceStatus({
-            value: 1,
-            device_number: "0"
-        }).then((data) => {
-            console.log('Device turned on successfully!');
-            deviceOnTime = DateTime.now();
-        }).catch((e) => console.log(e));
+        // goes through /pico/on so the PID controller is rebuilt from the current config - switching the I/O relais
+        // directly would leave the pico running on the PID controller it built at boot time.
+        setMachinePower(1)
+            .then(() => console.log('Device turned on successfully!'))
+            .catch((e) => console.log(e));
     }
 }
 
@@ -121,3 +136,4 @@ async function getMachineStatus() {
 
 exports.setOnTime = setOnTime;
 exports.getOnTime = getOnTime;
+exports.setMachinePower = setMachinePower;

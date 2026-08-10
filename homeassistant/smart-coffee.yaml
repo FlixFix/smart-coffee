@@ -1,0 +1,228 @@
+# Home Assistant package for Coffee Hub / smart-coffee
+#
+# FALLBACK ONLY - prefer the MQTT route described in README.md, which needs no YAML at all and creates the
+# entities automatically. Use this package only if you don't want to run an MQTT broker.
+#
+# Install:
+#   1. Copy this file to <config>/packages/smart-coffee.yaml on your HA host.
+#   2. Make sure configuration.yaml contains:
+#        homeassistant:
+#          packages: !include_dir_named packages
+#   3. Replace COFFEE_HUB_HOST below with the IP/hostname running the Node
+#      backend (the machine `npm start` runs on, default port 3001).
+#   4. Restart Home Assistant.
+#
+# Everything talks to the BACKEND, never to the Pico directly. The backend owns
+# the on-timer (idle auto-off), the coffee counter and the persisted config -
+# bypassing it means the machine never switches itself off again.
+#
+# Poll intervals are deliberately slow: the Pico runs its PID loop and the HTTP
+# server on a single asyncio event loop, and each temperature read blocks on the
+# DS18B20 conversion. Don't tighten these below ~10s.
+
+# ---------------------------------------------------------------------------
+# Sensors (read)
+# ---------------------------------------------------------------------------
+rest:
+  # One poll of /pico-status feeds all four device states.
+  - resource: http://COFFEE_HUB_HOST:3001/coffee-hub/api/v1/pico-status
+    scan_interval: 15
+    binary_sensor:
+      - name: "Coffee machine power"
+        unique_id: smart_coffee_power_state
+        device_class: power
+        value_template: >-
+          {{ 'on' if (value_json.devices | selectattr('device_number', 'eq', '0')
+             | map(attribute='value') | first | int) == 1 else 'off' }}
+
+      - name: "Coffee machine brewing"
+        unique_id: smart_coffee_brewing
+        icon: mdi:coffee-to-go
+        value_template: >-
+          {{ 'on' if (value_json.devices | selectattr('device_number', 'eq', '1')
+             | map(attribute='value') | first | int) == 1 else 'off' }}
+
+      - name: "Coffee machine heating"
+        unique_id: smart_coffee_heating
+        device_class: heat
+        value_template: >-
+          {{ 'on' if (value_json.devices | selectattr('device_number', 'eq', '2')
+             | map(attribute='value') | first | int) == 1 else 'off' }}
+
+      # Device 3 is the tank pin (GPIO22, INPUT with PULL_UP - config.py:44).
+      # Verify the polarity against your hardware and flip the comparison if the
+      # state reads inverted; the firmware never documents which level is "full".
+      - name: "Coffee machine water tank"
+        unique_id: smart_coffee_tank
+        device_class: problem
+        value_template: >-
+          {{ 'on' if (value_json.devices | selectattr('device_number', 'eq', '3')
+             | map(attribute='value') | first | int) == 1 else 'off' }}
+
+  - resource: http://COFFEE_HUB_HOST:3001/coffee-hub/api/v1/temperature
+    scan_interval: 30
+    sensor:
+      - name: "Coffee boiler temperature"
+        unique_id: smart_coffee_boiler_temp
+        device_class: temperature
+        state_class: measurement
+        unit_of_measurement: "°C"
+        value_template: "{{ value_json.temp | round(1) }}"
+
+  - resource: http://COFFEE_HUB_HOST:3001/coffee-hub/api/v1/reference-temperature
+    scan_interval: 60
+    sensor:
+      - name: "Coffee reference temperature"
+        unique_id: smart_coffee_ref_temp
+        device_class: temperature
+        state_class: measurement
+        unit_of_measurement: "°C"
+        value_template: "{{ value_json.temp | round(1) }}"
+
+  # /active is 0/1 and always valid JSON. Do NOT use /on-status: it returns an
+  # empty body when the machine is off (server/index.js -> res.json(json())),
+  # which makes the REST sensor error out.
+  - resource: http://COFFEE_HUB_HOST:3001/coffee-hub/api/v1/active
+    scan_interval: 30
+    binary_sensor:
+      - name: "Coffee hub on-timer running"
+        unique_id: smart_coffee_on_timer
+        icon: mdi:timer-outline
+        value_template: "{{ 'on' if value_json.active | int == 1 else 'off' }}"
+
+  - resource: http://COFFEE_HUB_HOST:3001/coffee-hub/api/v1/stats
+    scan_interval: 300
+    sensor:
+      - name: "Coffees brewed"
+        unique_id: smart_coffee_count
+        state_class: total_increasing
+        icon: mdi:counter
+        value_template: "{{ value_json.coffeeCount | default(0) }}"
+
+  # Read-only view of the persisted config. json_attributes is an explicit
+  # allow-list on purpose: the raw response also contains wlanSsid and wlanPw in
+  # plaintext, which must not land in HA's state machine or recorder database.
+  - resource: http://COFFEE_HUB_HOST:3001/coffee-hub/api/v1/config
+    scan_interval: 300
+    sensor:
+      - name: "Coffee target temperature"
+        unique_id: smart_coffee_target_temp
+        device_class: temperature
+        unit_of_measurement: "°C"
+        value_template: "{{ value_json.brewTemp }}"
+        json_attributes:
+          - brewTemp
+          - singleBrewTime
+          - doubleBrewTime
+          - idleTime
+          - pidKP
+          - pidKI
+          - pidKD
+          - timesOn
+          - daysOn
+
+# ---------------------------------------------------------------------------
+# Power switch (write)
+# ---------------------------------------------------------------------------
+# Turning on via PUT /devices with device_number "0" makes the backend call
+# /pico/on (starts the PID) *and* start its idle timer. Calling the Pico's
+# /pico/on directly would heat the machine forever.
+switch:
+  - platform: rest
+    name: "Coffee machine"
+    unique_id: smart_coffee_power
+    resource: http://COFFEE_HUB_HOST:3001/coffee-hub/api/v1/devices
+    state_resource: http://COFFEE_HUB_HOST:3001/coffee-hub/api/v1/pico-status
+    method: put
+    headers:
+      Content-Type: application/json
+    body_on: '{"device_number": "0", "value": 1}'
+    body_off: '{"device_number": "0", "value": 0}'
+    is_on_template: >-
+      {{ (value_json.devices | selectattr('device_number', 'eq', '0')
+         | map(attribute='value') | first | int) == 1 }}
+    scan_interval: 15
+
+# ---------------------------------------------------------------------------
+# Actions (write)
+# ---------------------------------------------------------------------------
+rest_command:
+  coffee_brew_single:
+    url: http://COFFEE_HUB_HOST:3001/coffee-hub/api/v1/brew?type=single
+    method: get
+    timeout: 20
+
+  coffee_brew_double:
+    url: http://COFFEE_HUB_HOST:3001/coffee-hub/api/v1/brew?type=double
+    method: get
+    timeout: 20
+
+  coffee_cancel_brew:
+    url: http://COFFEE_HUB_HOST:3001/coffee-hub/api/v1/brew
+    method: delete
+    timeout: 10
+
+  # Manual pump toggle, mirrors the frontend's device switch.
+  coffee_set_device:
+    url: http://COFFEE_HUB_HOST:3001/coffee-hub/api/v1/devices
+    method: put
+    content_type: "application/json"
+    payload: '{"device_number": "{{ device }}", "value": {{ value }}}'
+
+template:
+  - button:
+      - name: "Brew single shot"
+        unique_id: smart_coffee_brew_single_btn
+        icon: mdi:coffee
+        press:
+          - action: rest_command.coffee_brew_single
+
+      - name: "Brew double shot"
+        unique_id: smart_coffee_brew_double_btn
+        icon: mdi:coffee-outline
+        press:
+          - action: rest_command.coffee_brew_double
+
+      - name: "Cancel brewing"
+        unique_id: smart_coffee_cancel_brew_btn
+        icon: mdi:stop-circle-outline
+        press:
+          - action: rest_command.coffee_cancel_brew
+
+  - sensor:
+      # How far the boiler is from its setpoint - handy for a "ready" automation.
+      - name: "Coffee temperature deviation"
+        unique_id: smart_coffee_temp_deviation
+        unit_of_measurement: "°C"
+        state_class: measurement
+        availability: >-
+          {{ has_value('sensor.coffee_boiler_temperature')
+             and has_value('sensor.coffee_target_temperature') }}
+        state: >-
+          {{ (states('sensor.coffee_boiler_temperature') | float
+              - states('sensor.coffee_target_temperature') | float) | round(1) }}
+
+  - binary_sensor:
+      # Mirrors the frontend's readiness logic (REACT_APP_READY_DERIVATION=3).
+      - name: "Coffee machine ready"
+        unique_id: smart_coffee_ready
+        icon: mdi:coffee-maker-check
+        availability: "{{ has_value('sensor.coffee_temperature_deviation') }}"
+        state: >-
+          {{ is_state('binary_sensor.coffee_machine_power', 'on')
+             and states('sensor.coffee_temperature_deviation') | float | abs <= 3 }}
+
+# ---------------------------------------------------------------------------
+# Example automation: notify once the machine is up to temperature.
+# ---------------------------------------------------------------------------
+# automation:
+#   - alias: "Coffee ready notification"
+#     trigger:
+#       - platform: state
+#         entity_id: binary_sensor.coffee_machine_ready
+#         to: "on"
+#         for: "00:00:20"
+#     action:
+#       - action: notify.mobile_app_your_phone
+#         data:
+#           message: "Silvia is at temperature ☕"

@@ -47,8 +47,16 @@ export function LogsPage(): ReactElement {
 
 
     useEffect(() => {
-        const socket = new WebSocket(`ws://${process.env.REACT_APP_BACKEND_IP}:7071`);
+        // the host is taken from the page url instead of a build time env variable: the frontend is served by the
+        // backend itself, so this always points at the right machine - a baked in 'localhost' only ever worked in a
+        // browser running on the server and left the log view silently empty on every other device.
+        const socket = new WebSocket(`ws://${window.location.hostname}:7071`);
         socket.addEventListener('open', () => {
+        });
+
+        socket.addEventListener('error', () => {
+            appendLogEntries(`Could not connect to the log stream at ws://${window.location.hostname}:7071`,
+                LogType.PICO);
         });
 
         socket.addEventListener('message', (event) => {

@@ -28,6 +28,7 @@ PICO_BREW_PATH = '/pico/brew'
 PICO_TEMPERATURE_PATH = '/pico/temperature'
 PICO_REF_TEMPERATURE_PATH = '/pico/ref-temperature'
 PICO_RESET_PATH = '/pico/reset'
+PICO_UPLOAD_PATH = '/pico/upload'
 DEVICES_STATUS_PATH = '/devices/status'
 
 
@@ -116,6 +117,9 @@ async def serve_client(reader, writer):
 
     elif request_method == 'POST' and request_path == PICO_RESET_PATH:
         await handle_post_pico_reset(reader, writer)
+
+    elif request_method == 'POST' and PICO_UPLOAD_PATH in request_path:
+        await handle_post_pico_upload(reader, request_path, writer)
 
     else:
         await read_complete_request(reader)
@@ -292,11 +296,68 @@ async def handle_get_pico_on(reader, writer):
 async def handle_post_pico_reset(reader, writer):
     """
     Handles the POST pico reset request and hard-resets the Pico after the response is flushed.
-    Used by the WebREPL OTA deploy flow.
+    Used by the HTTP OTA deploy flow to reboot into freshly uploaded files.
     """
     await read_complete_request(reader)
     writer.write('HTTP/1.0 200 OK\r\nContent-Length: 0\r\n\r\n')
     asyncio.create_task(_reset_after_delay())
+
+
+def _parse_query_param(request_path, key):
+    """
+    Extracts a single query parameter from a request path and sanitises it to a flat
+    filename (no path traversal, no directory separators).
+    :param request_path: the full request path, possibly including a query string.
+    :param key: the query parameter name to extract.
+    :return: the sanitised value, or '' if absent.
+    """
+    if '?' not in request_path:
+        return ''
+    value = ''
+    for pair in request_path.split('?', 1)[1].split('&'):
+        if pair.startswith(key + '='):
+            value = pair[len(key) + 1:]
+            break
+    return value.replace('..', '').replace('/', '').replace('\\', '').strip()
+
+
+async def handle_post_pico_upload(reader, request_path, writer):
+    """
+    Handles the POST pico upload request used by the HTTP OTA deploy flow. The target
+    filename is given as a 'name' query parameter and the raw file content is the request
+    body. The file is written to the Pico's flash root. Reboot (POST /pico/reset) to apply.
+    :param reader: the read buffer of the current request.
+    :param request_path: the full request path including the '?name=' query parameter.
+    :param writer: the write buffer of the current response.
+    """
+    name = _parse_query_param(request_path, 'name')
+
+    # Read the remaining headers (the request line was already consumed), capturing the
+    # body length, until the blank line that separates headers from the body.
+    content_length = 0
+    while True:
+        line = await reader.readline()
+        if line == b'\r\n' or line == b'':
+            break
+        if line.lower().startswith(b'content-length:'):
+            content_length = int(line.split(b':', 1)[1].strip())
+
+    body = b''
+    while len(body) < content_length:
+        chunk = await reader.read(content_length - len(body))
+        if not chunk:
+            break
+        body += chunk
+
+    if not name:
+        writer.write('HTTP/1.0 400 Bad Request\r\nContent-Length: 0\r\n\r\n')
+        return
+
+    with open('/' + name, 'wb') as f:
+        f.write(body)
+
+    logger.info('OTA: wrote ' + str(len(body)) + ' bytes to /' + name)
+    writer.write('HTTP/1.0 200 OK\r\nContent-Length: 0\r\n\r\n')
 
 
 async def _reset_after_delay():

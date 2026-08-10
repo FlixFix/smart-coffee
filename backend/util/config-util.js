@@ -28,6 +28,18 @@ function writeConfig(config) {
 }
 
 /**
+ * Merges a partial config into the current config and persists the result. Needed because both the pico and the
+ * frontend expect a complete config object - the pico's PUT handler indexes all of its keys unconditionally and
+ * raises a KeyError on a partial body - so single-value changes (e.g. a Home Assistant number entity setting the
+ * brew temperature) have to be merged on top of the stored config first.
+ * @param partialConfig an object holding only the keys to be changed.
+ * @returns {*} the merged config as JSON.
+ */
+function patchConfig(partialConfig) {
+    return writeConfig({...readConfig(), ...partialConfig});
+}
+
+/**
  * Deletes the custom config.
  */
 function deleteConfig() {
@@ -38,5 +50,6 @@ function deleteConfig() {
 }
 
 exports.writeConfig = writeConfig;
+exports.patchConfig = patchConfig;
 exports.readConfig = readConfig;
 exports.deleteConfig = deleteConfig;

@@ -10,11 +10,6 @@ import wifi
 import pico_coffee
 import pico_pid
 
-try:
-    import webrepl
-except ImportError:
-    webrepl = None
-
 
 # RP2040 hardware watchdog: max timeout is 8388 ms. We feed it every 2 s from
 # an async heartbeat. If any task blocks the event loop or main() crashes into
@@ -43,12 +38,6 @@ async def main():
     global _wdt
 
     await init()
-
-    if webrepl is not None and wifi.connected_to_wifi:
-        try:
-            webrepl.start()
-        except Exception as e:
-            logger.info('WebREPL failed to start: ' + str(e))
 
     # Start the watchdog only after the initial connect — a cold-boot connect
     # can legitimately exceed the 8.388 s timeout.

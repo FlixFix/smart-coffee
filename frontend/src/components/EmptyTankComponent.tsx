@@ -20,6 +20,6 @@ export function EmptyTankComponent(props: EmptyTankComponentProps): ReactElement
 
 return (<div className='tank-chip small ps-3 pe-3 d-flex align-items-center gap-2 fw-bold'>
     <IconAlertTriangle className='icon-dark '/>
-    Bitte Tank füllen!
+    Tank füllen!
 </div>)
 }

@@ -2,17 +2,16 @@
 // server/index.js
 
 const express = require("express");
-const {writeConfig, readConfig, deleteConfig} = require("../util/config-util");
+const {writeConfig, readConfig, deleteConfig, patchConfig} = require("../util/config-util");
 const {
-    getPicoStatus, setDeviceStatus, getTemperature, turnMachineOn,
+    getPicoStatus, setDeviceStatus, getTemperature,
     getReferenceTemperature, updateConfig, cancelBrewing, getPicoHealth, picoBrewCoffee
 } = require("../service/pico-service");
-const {setOnTime, getOnTime} = require("../service/coffee-service");
+const {getOnTime, setMachinePower} = require("../service/coffee-service");
 const {resolve} = require("path");
-const {DateTime} = require("luxon");
-const {json} = require("express");
 const {logPicoMessage} = require("../util/logging-util");
 const {mqttClient} = require("../service/mqtt-service");
+const {startHomeAssistantBridge, handleCommand, COMMAND_PREFIX} = require("../service/homeassistant-service");
 
 
 require('dotenv').config({path: '.env'})
@@ -50,7 +49,8 @@ app.get("/coffee-hub/api/v1/pico-status", (req, res) => {
  */
 app.get("/coffee-hub/api/v1/on-status", (req, res) => {
     res.status(200);
-    res.json(getOnTime() !== null ? getOnTime() : json());
+    // null instead of an empty body: an empty response body is not valid JSON and breaks any consumer that parses it.
+    res.json(getOnTime() !== null ? getOnTime() : null);
 });
 
 app.get("/coffee-hub/api/v1/active", (req, res) => {
@@ -116,14 +116,9 @@ app.delete("/coffee-hub/api/v1/brew", (req, res) => {
  */
 app.put("/coffee-hub/api/v1/devices", (req, res) => {
     console.log(`setting status: ${req.body.value} for device ${req.body.device_number}`);
-    if (req.body.device_number === '0' && req.body.value === 1) {
-        turnMachineOn().then((data) => {
-            if (data.value === 1) {
-                console.log('Machine turned on!')
-                setOnTime(DateTime.now());
-            } else {
-                setOnTime(null);
-            }
+    if (req.body.device_number === '0') {
+        setMachinePower(req.body.value).then((data) => {
+            console.log(req.body.value === 1 ? 'Machine turned on!' : 'Machine turned off!');
             res.status(200);
             res.json(data);
         })
@@ -169,6 +164,29 @@ app.put("/coffee-hub/api/v1/config", (req, res) => {
 app.get("/coffee-hub/api/v1/config", (req, res) => {
     res.json(readConfig());
     res.status(200);
+});
+
+/**
+ * Updates single config values without having to send the complete config. The given keys are merged into the stored
+ * config and the merged result is sent to the pico, which needs a complete config object.
+ */
+app.patch("/coffee-hub/api/v1/config", (req, res) => {
+    if (!req.body || Object.keys(req.body).length === 0) {
+        res.status(400);
+        res.json();
+        return;
+    }
+
+    const config = patchConfig(req.body);
+    updateConfig(config).then(() => {
+        console.log(`Patched config with: ${JSON.stringify(req.body)}`);
+        res.status(200);
+        res.json(config);
+    }).catch(() => {
+        console.log('Could not write config to pico!')
+        res.status(200);
+        res.json(config);
+    })
 });
 
 /**
@@ -234,6 +252,9 @@ mqttClient.on('connect', () => {
     mqttClient.subscribe([process.env.MQTT_TOPIC], () => {
         console.log(`Subscribe to topic ${process.env.MQTT_TOPIC}`)
     })
+
+    // announce the coffee machine to Home Assistant and start publishing its state
+    startHomeAssistantBridge();
 })
 
 /**
@@ -247,6 +268,13 @@ mqttClient.on('error', (e) => {
  * When a message from the MQTT broker is received, it will be sent through the websocket as well as written to the log file.
  */
 mqttClient.on('message', (topic, payload) => {
+    // commands from Home Assistant share the broker but are not pico log output - they must not end up in the log
+    // file or in the frontend's log view.
+    if (topic.startsWith(COMMAND_PREFIX)) {
+        handleCommand(topic, payload);
+        return;
+    }
+
     logPicoMessage(payload);
     sendMessageToClients(payload);
 })
